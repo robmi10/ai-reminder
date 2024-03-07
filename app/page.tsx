@@ -1,6 +1,6 @@
 
 "use client"
-import VoiceRecognition from "@/components/speechrecorder";
+import VoiceRecognition from "@/app/components/speechrecorder";
 import { Button } from "@/components/ui/button";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 

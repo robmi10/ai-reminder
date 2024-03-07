@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: aireminder
+      POSTGRES_USER: mike
+      POSTGRES_PASSWORD: 12345678
+    ports:
+      - "5433:5432"
+    volumes:
+      - my_db_volume:/var/lib/postgresql/data
+volumes:
+  my_db_volume:
