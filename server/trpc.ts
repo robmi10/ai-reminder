@@ -6,7 +6,7 @@ import { getAuth, SignedInAuthObject, SignedOutAuthObject } from '@clerk/nextjs/
 // }
 
 export async function createInnerContext(req: any) {
-    return await getAuth(req);
+    return await { auth: getAuth(req) };
 }
 
 export type Context = Awaited<ReturnType<typeof createInnerContext>>;
@@ -18,12 +18,12 @@ export const createTRPCRouter = t.router;
 
 const isUserAuthed = t.middleware(({ ctx, next }) => {
     console.log("ctx check ->", ctx)
-    if (!ctx.session) {
+    if (!ctx.auth.userId) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     return next({
         ctx: {
-            session: { ...ctx.session },
+            auth: ctx.auth
         },
     });
 });
