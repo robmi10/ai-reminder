@@ -1,12 +1,36 @@
 import { api } from '@/lib/api';
 import { aiRouter } from '@/server/routers/ai';
+import { useReminderStore } from '@/zustand/reminderstore';
 import { useEffect, useRef, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY ?? ''
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export const useRecorder = () => {
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
     const [recorder, setRecorder] = useState<any>(false)
-    const [audio, setAudio] = useState<any>(false)
     const chunks = useRef([]);
+    const { setAudio, setGeneratedText } = useReminderStore()
+
+    const handleUploadAudio = async (audioBlob: any) => {
+        const filePath = `uploads/${Date.now()}-audiofile.wav`;
+        const { data, error } = await supabase.storage.from('reminders').upload(filePath, audioBlob, {
+            cacheControl: '3600',
+            upsert: false
+        })
+        console.log("data check now here ->", data)
+
+        if (error) {
+            console.error(error)
+            return null
+        }
+
+        const res = supabase.storage.from('reminders').getPublicUrl(filePath);
+        const fileUrl = res.data.publicUrl
+        return fileUrl;
+    }
 
     const generateText = api.ai.generateText.useMutation({
         onSettled() {
@@ -14,20 +38,11 @@ export const useRecorder = () => {
         }
     })
 
-    const handleGenerateText = (blob: any) => {
+    const handleGenerateText = async (blob: any) => {
         console.log("check now blob ->", blob)
-
-        const audioUrl = URL.createObjectURL(blob);
-
+        const audioUrl = await handleUploadAudio(blob) ?? ''
         setAudio(audioUrl)
         console.log("audioUrl check ->", audioUrl)
-        // generateText.mutate({
-        //     audio: blob
-        // }, {
-        //     onSuccess() {
-        //         console.log("its succesfull now")
-        //     }
-        // })
     }
 
     const startRecorder = () => {

@@ -18,11 +18,12 @@ export default function Home() {
             </SignInButton>
           </>
         }
-        {isSignedIn && <div className=" space-y-8">
+        {isSignedIn && <div className="space-y-8 w-full flex flex-col items-center">
           <div>YOU ARE LOGGED IN NOW </div>
           <SignOutButton>
             <Button className="rounded-xl border border-black w-1/4 hover:bg-slate-100 hover:transition-colors hover:duration-300 hover:ease-in-out"> LOGOUT</Button>
           </SignOutButton>
+
 
           <VoiceRecognition />
         </div>}
