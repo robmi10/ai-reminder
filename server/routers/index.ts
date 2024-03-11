@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "../trpc";
-import { aiRouter } from "./ai";
+import { aiRouter } from "./reminder";
 import { eventRouter } from "./event";
 
 export const appRouter = createTRPCRouter({

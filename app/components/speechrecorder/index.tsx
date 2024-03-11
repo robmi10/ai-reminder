@@ -9,7 +9,8 @@ import { api } from '@/lib/api';
 
 const VoiceRecognition = () => {
   const { recorder, stopRecorder, startRecorder } = useRecorder()
-  const [text, setText] = useState<string>('')
+  const [transcription, setTranscription] = useState<string>('')
+  const [reminder, setReminder] = useState<string>('')
   const { audio } = useReminderStore()
   console.log("recorder ->", recorder)
   const generateTextMutation = api.ai.generateText.useMutation({
@@ -23,12 +24,13 @@ const VoiceRecognition = () => {
     audio && generateTextMutation.mutate({
       audio: audio
     }, {
-      onSuccess(data: string) {
+      onSuccess(data: any) {
         console.log("its succesfull now")
-        setText(data)
+        setReminder(data.reminder)
+        setTranscription(data.text)
       }
     })
-  }, [audio])
+  }, [audio, generateTextMutation])
 
   console.log("generateTextMutation status ->", generateTextMutation.status)
 
@@ -36,7 +38,7 @@ const VoiceRecognition = () => {
   return (
     <div className='w-full bg-red-300 h-auto border border-black rounded-2xl flex p-8 flex-col items-center space-y-8'>
       <span >VOICE RECORDER</span>
-      <div className='h-2/4 w-2/4 flex justify-center items-center'>
+      <div className='h-2/4 w-full flex justify-center items-center'>
         {!generateTextMutation.isPending && <div className='flex flex-col justify-center items-center gap-8'>
           <div className='flex items-center  gap-2'>
             {!recorder && <CiMicrophoneOn size={30} color='blue' className='cursor-pointer' onClick={() => {
@@ -47,7 +49,16 @@ const VoiceRecognition = () => {
             }} />}
             {audio && <audio src={audio} controls></audio>}
           </div>
-          {text && <WordByWordRenderer delay={150} text={text} />}
+          <div className='flex w-full flex-row gap-8 justify-between text-sm'>
+            <div>
+              <span>TRANSCRIPTION</span>
+              {transcription && <WordByWordRenderer delay={150} text={transcription} />}
+            </div>
+            <div>
+              <span>REMINDERS</span>
+              {reminder && <WordByWordRenderer delay={150} text={reminder} />}
+            </div>
+          </div>
         </div>}
         {generateTextMutation.isPending && <div>
           <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { aiRouter } from '@/server/routers/ai';
+import { aiRouter } from '@/server/routers/reminder';
 import { useReminderStore } from '@/zustand/reminderstore';
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
@@ -12,13 +12,14 @@ export const useRecorder = () => {
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
     const [recorder, setRecorder] = useState<any>(false)
     const chunks = useRef([]);
-    const { setAudio, setGeneratedText } = useReminderStore()
+    const { setAudio } = useReminderStore()
 
     const handleUploadAudio = async (audioBlob: any) => {
         const filePath = `uploads/${Date.now()}-audiofile.wav`;
         const { data, error } = await supabase.storage.from('reminders').upload(filePath, audioBlob, {
             cacheControl: '3600',
-            upsert: false
+            upsert: false,
+            
         })
         console.log("data check now here ->", data)
 
@@ -32,11 +33,6 @@ export const useRecorder = () => {
         return fileUrl;
     }
 
-    const generateText = api.ai.generateText.useMutation({
-        onSettled() {
-            console.log("its settled now")
-        }
-    })
 
     const handleGenerateText = async (blob: any) => {
         console.log("check now blob ->", blob)
