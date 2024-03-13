@@ -18,9 +18,9 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
         console.log("inside sendSMS 3", reminder.phone)
         return client.messages
             .create({
-                body: `Reminder: '${reminder.reminder}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: http://localhost:3000/`,
+                body: `Reminder: '${reminder.desc}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: http://localhost:3000/`,
                 to: reminder.phone,
-                from: '+13016405658',
+                from: '+18582641195',
             })
             .then((message: any) => console.log(message.sid)).catch((error: any) => console.error("Twilio Error:", error));;
     });
