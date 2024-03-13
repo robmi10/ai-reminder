@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
-import { array, z } from "zod";
+import { z } from "zod";
 import Replicate from "replicate";
 import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
@@ -18,7 +18,7 @@ export const aiRouter = createTRPCRouter({
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        const output = await replicate.run(
+        const output: any = await replicate.run(
             "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
             {
                 input: {
@@ -98,10 +98,9 @@ export const aiRouter = createTRPCRouter({
         const reminders = await db.selectFrom('event').selectAll().where('userId', '=', opts.input.userId).orderBy('start asc').execute()
         return reminders
     }),
-    setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
+    setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number(), status: z.boolean() }))).mutation(async (opts) => {
         const res = await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({
-            status: true
+            status: opts.input.status
         }).execute()
-        return res
     })
 })

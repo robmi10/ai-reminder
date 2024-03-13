@@ -18,8 +18,10 @@
     "@trpc/next": "^11.0.0-next-beta.308",
     "@trpc/react-query": "^11.0.0-next-beta.308",
     "@trpc/server": "^11.0.0-next-beta.308",
+    "aws-lambda": "^1.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "date-fns": "^3.4.0",
     "formidable": "^3.5.1",
     "knex": "^3.1.0",
     "kysely": "^0.27.2",
@@ -31,12 +33,16 @@
     "react-dom": "^18",
     "react-icons": "^5.0.1",
     "replicate": "^0.27.1",
+    "resend": "^3.2.0",
+    "serverless": "^3.38.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "twilio": "^5.0.0",
     "zod": "^3.22.4",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.136",
     "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/pg": "^8.11.2",
@@ -46,6 +52,9 @@
     "eslint": "^8",
     "eslint-config-next": "14.1.2",
     "postcss": "^8",
+    "serverless-esbuild": "^1.52.1",
+    "serverless-offline": "^13.3.3",
+    "serverless-plugin-typescript": "^2.1.5",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
