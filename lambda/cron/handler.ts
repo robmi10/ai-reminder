@@ -7,7 +7,6 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
 
-    console.log("inside sendSMS 1")
     const client = require('twilio')(accountSid, authToken);
 
     console.log("inside sendSMS 2", client)
