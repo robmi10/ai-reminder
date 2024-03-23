@@ -8,10 +8,10 @@ const Description = ({ children }) => {
 
     const y = useTransform(scrollYProgress, [0, 1], ["5%", "-300%"])
     const controls = useAnimation();
-    // const [ref, inView] = useInView({
-    //     triggerOnce: true,
-    //     rootMargin: '-100px 0px',
-    // });
+    const [ref, inView] = useInView({
+        triggerOnce: true,
+        rootMargin: '-100px 0px',
+    });
 
     const boxFirst = useTransform(scrollYProgress, [0, 1], [1, 4]);
     const boxSecond = useTransform(scrollYProgress, [0, 1], [1, 4]);
