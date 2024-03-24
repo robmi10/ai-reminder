@@ -6,6 +6,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Reminders from "./components/reminders";
 import Firstpage from "./home/firstpage";
 import Secondpage from "./home/secondpage";
+import Thirdpage from "./home/thirdpage";
 
 export default function Home() {
   const { isSignedIn } = useUser();
@@ -21,7 +22,7 @@ export default function Home() {
           </div>
           <Firstpage />
           <Secondpage />
-          <Firstpage />
+          <Thirdpage />
         </div>
       }
       {isSignedIn && <div className="space-y-8 w-full flex flex-col items-center">

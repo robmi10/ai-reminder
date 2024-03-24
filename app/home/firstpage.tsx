@@ -1,5 +1,6 @@
 import React from 'react'
 import { CiAlarmOn } from "react-icons/ci";
+import { FaArrowTurnDown } from "react-icons/fa6";
 
 
 const Firstpage = () => {
@@ -10,7 +11,7 @@ const Firstpage = () => {
             <span className="bg-white shadow-lg w-2/4 h-24 p-8 rounded-2xl">
                 Your Personal Reminder Assistant, Powered by AI
             </span>
-            <CiAlarmOn className="w-2/4 items-start flex" size={200} />
+            <FaArrowTurnDown className="w-2/4 animate-pulse items-start flex" size={400} />
         </div>
     )
 }
