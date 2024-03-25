@@ -7,6 +7,8 @@ import Reminders from "./components/reminders";
 import Firstpage from "./home/firstpage";
 import Secondpage from "./home/secondpage";
 import Thirdpage from "./home/thirdpage";
+import Footer from "./components/footer/footer";
+import Buttonanimate from "./components/animation/buttonanimate";
 
 export default function Home() {
   const { isSignedIn } = useUser();
@@ -17,12 +19,14 @@ export default function Home() {
         <div>
           <div className="flex justify-end p-4">
             <SignInButton>
-              <Button className="w-16 shadow-lg"> Sign In</Button>
+              <Button className="w-auto shadow-lg rounded-full bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500"> Sign In</Button>
+              {/* <Buttonanimate title={"Sign in"} /> */}
             </SignInButton>
           </div>
           <Firstpage />
           <Secondpage />
           <Thirdpage />
+          <Footer />
         </div>
       }
       {isSignedIn && <div className="space-y-8 w-full flex flex-col items-center">

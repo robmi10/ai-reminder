@@ -6,7 +6,7 @@ const cardContent = [
     { title: "Save time and mental energy. Focus on what truly matters, while AI Reminder takes care of the rest.", px: "-600px" }
 ]
 
-const Description = ({ children }) => {
+const Description = ({ children }: any) => {
 
     return (
         <div
@@ -21,9 +21,9 @@ const Secondpage = () => {
             <div className="flex space-x-18">
                 <span className="text-2xl sticky top-20 left-0 w-full h-[50vh] items-center font-medium items-top justify-center flex">Why AI Reminder?</span>
                 <div className="flex gap-16 flex-col">
-                    {cardContent.map((card) => {
+                    {cardContent.map((card, i) => {
                         return (
-                            <Description>{card.title}</Description>
+                            <Description key={i}>{card.title}</Description>
                         )
                     })}
 
