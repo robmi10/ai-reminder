@@ -4,7 +4,7 @@ import { FaArrowTurnDown } from "react-icons/fa6";
 
 const Firstpage = () => {
     return (
-        <div className="h-[800px] flex p-44 items-center w-full flex-col space-y-16">
+        <div className="h-full flex p-44 items-center w-full flex-col space-y-16">
             <span className="text-2xl w-2/4 pl-8 font-medium" > WELCOME TO AI REMINDER</span>
 
             <span className="bg-white shadow-lg w-2/4 h-24 p-8 rounded-2xl">

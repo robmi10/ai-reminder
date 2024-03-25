@@ -15,7 +15,7 @@ const Thirdpage = () => {
     const image2Scale = useTransform(scrollYProgress, [0, 1], [0, 1]);
     return (
         <div className='h-screen w-screen flex flex-col justify-center items-center bg-stone-50'>
-            <div className='mt-44'>
+            <div className='mt-16'>
                 <Buttonanimate title={"Connect"} />
             </div>
             <div className='flex flex-row h-full w-2/4 justify-center items-center mt-24 '>

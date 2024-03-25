@@ -5,7 +5,7 @@ import { useRecorder } from './recorder';
 import { useReminderStore } from '@/zustand/reminderstore';
 import { WordByWordRenderer } from '../animation/WordAnimation';
 import { api } from '@/lib/api';
-
+import { twMerge } from 'tailwind-merge';
 
 const VoiceRecognition = () => {
   const { recorder, stopRecorder, startRecorder } = useRecorder()
@@ -36,13 +36,18 @@ const VoiceRecognition = () => {
 
 
   return (
-    <div className='w-full h-auto rounded-2xl flex p-8 flex-col items-center space-y-8'>
-      <span>Record your reminders</span>
-      <div className='bg-red-300 h-96 w-64 rounded-full' />
+    <div className='w-full h-auto rounded-2xl flex p-8 flex-col items-center space-y-24'>
+      <div className='relative h-96 w-72'>
+        <div className={twMerge('absolute z-10 bg-red-200 h-72 w-72 rounded-full opacity-100 blur-md animate-pulse')} />
+        <div className={twMerge('absolute z-10 bg-blue-200 h-64 w-64 rounded-full opacity-100 blur-lg animate-spin')} />
+        <div className={twMerge('absolute z-30 top-10 left-10 bg-indigo-400 h-56 w-56 rounded-full opacity-50 blur-lg')} />
+        {/* <div className='absolute z-30 top-4/4 left-4/4 bg-green-400 h-56 w-56 rounded-full opacity-50' /> */}
+
+      </div>
       <div className='h-2/4 w-full flex justify-center items-center'>
         {!generateTextMutation.isPending && <div className='flex flex-col justify-center items-center gap-8'>
-          <div className='flex items-center  gap-2 border rounded-full p-4 bg-gray-100'>
-            {!recorder && <CiMicrophoneOn size={30} color='blue' className='cursor-pointer' onClick={() => {
+          <div className='flex items-center  gap-2 border rounded-full p-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out'>
+            {!recorder && <CiMicrophoneOn size={20} color='blue' className='cursor-pointer' onClick={() => {
               startRecorder()
             }} />}
             {recorder && <GoDotFill size={30} color='red' className='cursor-pointer animate-ping' onClick={() => {
