@@ -7,12 +7,11 @@ import { WordByWordRenderer } from '../animation/WordAnimation';
 import { api } from '@/lib/api';
 import { twMerge } from 'tailwind-merge';
 import { motion } from "framer-motion"
+import Globe from '../animation/globe';
 
 const VoiceRecognition = () => {
   const { recorder, stopRecorder, startRecorder } = useRecorder()
-  const [transcription, setTranscription] = useState<string>('')
-  const [reminder, setReminder] = useState<string>('')
-  const { audio } = useReminderStore()
+  const { audio, setTranscription, setReminder } = useReminderStore()
   const [isHover, setIsHover] = useState(false)
   console.log("recorder ->", recorder)
   const generateTextMutation = api.ai.generateText.useMutation({
@@ -43,22 +42,14 @@ const VoiceRecognition = () => {
 
   return (
     <div className='w-full h-auto rounded-2xl flex p-8 flex-col items-center space-y-24'>
-      <div className='relative h-96 w-72'>
-        <div className={twMerge('absolute z-10 bg-red-200 h-72 w-72 rounded-full opacity-100 blur-md',
-          recorder && 'animate-pulse')} />
-        <div className={twMerge('absolute z-10 bg-blue-200 h-64 w-64 rounded-full opacity-100 blur-lg',
-          recorder && 'animate-spin')} />
-        <div className={twMerge('absolute z-30 top-10 left-10 bg-indigo-400 h-56 w-56 rounded-full opacity-50 blur-lg',
-          recorder && 'animate-pulse')} />
-        {/* <div className='absolute z-30 top-4/4 left-4/4 bg-green-400 h-56 w-56 rounded-full opacity-50' /> */}
-
-      </div>
+      <Globe recorder={recorder} />
       <div className='h-2/4 w-full flex justify-center items-center'>
         {!generateTextMutation.isPending && <div className='flex flex-col justify-center items-center gap-8'>
           <div
+
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
-            className='flex items-center  gap-2 border rounded-full p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out'>
+            className='flex items-center gap-2 border rounded-full p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out'>
             {!recorder && <motion.div
 
               variants={variantAudio}

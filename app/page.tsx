@@ -15,7 +15,7 @@ export default function Home() {
   const { isSignedIn } = useUser();
 
   return (
-    <div className="h-screen space-y-8 w-screen bg-stone-50">
+    <div className="h-full space-y-8 w-screen bg-stone-50">
       {!isSignedIn &&
         <div>
           <div className="flex justify-end p-4">
@@ -37,11 +37,6 @@ export default function Home() {
           </SignOutButton>
         </div>
         <Recorder />
-        {/* <SignOutButton>
-          <Button className="rounded-xl border border-black w-1/4 hover:bg-slate-100 hover:transition-colors hover:duration-300 hover:ease-in-out"> LOGOUT</Button>
-        </SignOutButton>
-        <VoiceRecognition />
-        <Reminders /> */}
       </div>}
 
     </div >

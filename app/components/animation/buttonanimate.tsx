@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { GoArrowUpRight, GoArrowUpLeft, FiArrowLeft } from "react-icons/go";
+import { GoArrowUpRight, GoArrowUpLeft } from "react-icons/go";
 import { twMerge } from 'tailwind-merge';
 
 interface props {
@@ -37,6 +37,7 @@ const Buttonanimate = ({ title, back }: props) => {
             onMouseEnter={() => { setIsHover(true) }}
             onMouseLeave={() => { setIsHover(false) }}>
             <motion.button
+                onClick={() => { console.log("button animate pressed") }}
                 whileHover="hover" className={twMerge('relative h-12 w-36 rounded-full flex z-5 justify-center items-center border bg-gray-500 text-white',
                     back && 'h-12 w-12')}>
                 {!back && <motion.span variants={textVariants} animate={isHover ? "hover" : "initial"} className='flex z-20 items-center h-full'
@@ -46,7 +47,9 @@ const Buttonanimate = ({ title, back }: props) => {
                 {back && !isHover && <GoArrowUpLeft size={15} />}
             </motion.button >
             <AnimatePresence>
-                {isHover && <motion.button whileHover="hover"
+                {isHover && <motion.button
+                    onClick={() => { console.log("button animate pressed second") }}
+                    whileHover="hover"
                     className={twMerge('absolute top-0 z-10 h-12 w-36 rounded-full flex justify-center items-center bg-gray-800',
                         back && 'h-12 w-12')}
                     initial="initial"

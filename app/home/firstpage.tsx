@@ -1,18 +1,24 @@
 import React from 'react'
 import { FaArrowTurnDown } from "react-icons/fa6";
+import { IoIosArrowDown } from "react-icons/io";
+
+import Globe from '../components/animation/globe';
 
 
 const Firstpage = () => {
     return (
-        <div className="h-full flex p-44 items-center w-full flex-col space-y-16">
-            <span className="text-2xl w-2/4 pl-8 font-medium" > WELCOME TO AI REMINDER</span>
-
-            <span className="bg-white shadow-lg w-2/4 h-24 p-8 rounded-2xl">
-                Your Personal Reminder Assistant, Powered by AI
-            </span>
-            <div className='h-2/4 mt-44 flex items-center'>
-                <FaArrowTurnDown className="animate-bounce mt-4" size={40} />
+        <div className="h-screen flex justify-center items-center w-full flex-col gap-8">
+            <div className='absolute top-0 w-full h-full flex items-center justify-center z-0 right-24'>
+                <Globe large={true} />
             </div>
+            <div className='bg-white shadow-2xl rounded-3xl p-6 gap-2 flex flex-col z-10'>
+                <span className="text-2xl flex justify-center font-medium z-10" > WELCOME TO AI REMINDER</span>
+
+                <span className="rounded-2xl z-10 flex justify-center">
+                    Your Personal Reminder Assistant, Powered by AI
+                </span>
+            </div>
+            <IoIosArrowDown className="animate-bounce mt-12" size={50} />
         </div>
     )
 }
