@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 interface props {
     title?: string,
-    back: boolean
+    back?: boolean
 }
 
 const Buttonanimate = ({ title, back }: props) => {

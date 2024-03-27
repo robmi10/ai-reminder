@@ -11,7 +11,7 @@ const Firstpage = () => {
             <div className='absolute top-0 w-full h-full flex items-center justify-center z-0 right-24'>
                 <Globe large={true} />
             </div>
-            <div className='bg-white shadow-2xl rounded-3xl p-6 gap-2 flex flex-col z-10'>
+            <div className='bg-slate-50 shadow-2xl rounded-3xl p-6 gap-2 flex flex-col z-10'>
                 <span className="text-2xl flex justify-center font-medium z-10" > WELCOME TO AI REMINDER</span>
 
                 <span className="rounded-2xl z-10 flex justify-center">

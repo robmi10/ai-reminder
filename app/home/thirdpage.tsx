@@ -14,8 +14,8 @@ const Thirdpage = () => {
     const image2 = useTransform(scrollYProgress, [0, 1], [0, -150]);
     const image2Scale = useTransform(scrollYProgress, [0, 1], [0, 1]);
     return (
-        <div className='h-screen w-screen flex flex-col justify-center items-center bg-stone-50'>
-            <div className='mt-16'>
+        <div className='h-screen w-screen flex flex-col justify-center items-center bg-slate-50'>
+            <div className='mt-40'>
                 <Buttonanimate title={"Connect"} />
             </div>
             <div className='flex flex-row h-full w-2/4 justify-center items-center mt-24 '>
