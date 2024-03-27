@@ -18,7 +18,7 @@ const Firstpage = () => {
                     Your Personal Reminder Assistant, Powered by AI
                 </span>
             </div>
-            <IoIosArrowDown className="animate-bounce mt-12" size={50} />
+            <IoIosArrowDown className="animate-bounce mt-12 text-stone-50 rounded-full border border-stone-50 p-3 shadow-2xl" size={50} />
         </div>
     )
 }
