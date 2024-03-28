@@ -24,6 +24,11 @@ const Reminder = () => {
             console.log("it settled now!")
         }
     })
+    const deleteReminderMutation = api.ai.deleteReminder.useMutation({
+        onSettled() {
+            console.log("it deleted now!")
+        }
+    })
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
         if (!eventId) return null
@@ -31,6 +36,17 @@ const Reminder = () => {
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
                 console.log("inside refetch")
+                useReminders.refetch()
+            }
+        })
+    }
+
+    const handleDeleteReminder = (eventId: number | undefined) => {
+        if (!eventId) return null
+        console.log("inside handleDeleteReminder", eventId)
+        deleteReminderMutation.mutate({ eventId: eventId }, {
+            onSuccess() {
+                console.log("inside refetch deleted")
                 useReminders.refetch()
             }
         })
@@ -89,7 +105,7 @@ const Reminder = () => {
                                                     This action cannot be undone. This will permanently delete your reminder.
                                                 </DialogDescription>
                                                 <div className='flex gap-4'>
-                                                    <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
+                                                    <Button onClick={() => { handleDeleteReminder(opts.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
                                                     <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>NO</Button>
                                                 </div>
                                             </DialogContent>

@@ -99,8 +99,28 @@ export const aiRouter = createTRPCRouter({
         return reminders
     }),
     setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number(), status: z.boolean() }))).mutation(async (opts) => {
-        const res = await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({
+        await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({
             status: opts.input.status
         }).execute()
-    })
+    }),
+    deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
+        await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
+    }),
+    setReminderDate: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.date().optional(), timeReminder: z.date().optional() }))).mutation(async (opts) => {
+        const updatePayload = { desc: '', start: new Date(), reminder: new Date() };
+
+        if (opts.input.desc) {
+            updatePayload.desc = opts.input.desc;
+        }
+        if (opts.input.timeStart) {
+            updatePayload.start = opts.input.timeStart;
+        }
+        if (opts.input.timeReminder) {
+            updatePayload.reminder = opts.input.timeReminder;
+        }
+
+        await db.updateTable('event').where('eventId', '=', opts.input.eventId).set(
+            updatePayload
+        ).execute()
+    }),
 })
