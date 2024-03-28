@@ -3,9 +3,7 @@ import { CiMicrophoneOn } from "react-icons/ci";
 import { GoDotFill } from "react-icons/go";
 import { useRecorder } from './recorder';
 import { useReminderStore } from '@/zustand/reminderstore';
-import { WordByWordRenderer } from '../animation/WordAnimation';
 import { api } from '@/lib/api';
-import { twMerge } from 'tailwind-merge';
 import { motion } from "framer-motion"
 import Globe from '../animation/globe';
 
