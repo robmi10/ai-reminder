@@ -1,6 +1,6 @@
 import React from 'react'
 import VoiceRecognition from '../components/speechrecorder'
-import Reminder from '../reminder/reminder'
+import Reminder from '../reminder'
 import { useReminderStore } from '@/zustand/reminderstore'
 
 
