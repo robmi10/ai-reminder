@@ -52,7 +52,7 @@ const Reminder = () => {
 
                                 <Dialog>
                                     <DialogTrigger asChild className='w-full relative'>
-                                        <CiTrash className='cursor-pointer absolute w-full right-0 bg-red-50 top-0' />
+                                        <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
                                     </DialogTrigger>
                                     <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
                                         <span className='text-xl'>Delete Reminder?</span>

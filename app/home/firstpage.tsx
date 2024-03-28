@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaArrowTurnDown } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 
 import Globe from '../components/animation/globe';

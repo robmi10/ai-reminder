@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button'
-import { SignOutButton } from '@clerk/nextjs'
 import React from 'react'
 import VoiceRecognition from '../components/speechrecorder'
 import Reminder from '../reminder/reminder'
