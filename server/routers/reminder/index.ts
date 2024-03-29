@@ -77,13 +77,13 @@ export const aiRouter = createTRPCRouter({
                     console.log("reminderTime ->", reminderTime)
 
                     await db.insertInto('event').values({
-                        userId: 1, // Assuming 'userId' is a number and correctly typed
-                        desc: opt.task, // Ensure 'desc' matches the expected type (likely string)
-                        start: startDateTime, // Combining 'date' and 'time' and converting to Date
-                        reminder: reminderTime, // Assuming 'reminder' needs conversion to Date
-                        status: false, // Matching boolean type
-                        email: 'robelmichael102@gmail.com', // Adjust if 'email' is optional or provide a valid value
-                        phone: "0707276369", // Adjust if 'phone' is optional or provide a valid value
+                        userId: 1,
+                        desc: opt.task,
+                        start: startDateTime.toString(),
+                        reminder: reminderTime.toString(), 
+                        status: false,
+                        email: 'robelmichael102@gmail.com',
+                        phone: "0707276369",
                     }).execute()
                 }));
                 console.log('All reminders have been inserted successfully.');
@@ -106,19 +106,32 @@ export const aiRouter = createTRPCRouter({
     deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
     }),
-    setReminderDate: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.date().optional(), timeReminder: z.date().optional() }))).mutation(async (opts) => {
-        const updatePayload = { desc: '', start: new Date(), reminder: new Date() };
+    editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string().optional(), timeReminder: z.string().optional() }))).mutation(async (opts) => {
+        const updatePayload = { desc: '', start: '', reminder: '' };
 
+        console.log("inside editReminder: protectedProcedure updatePayload check")
+
+        const mergeDateTime = (currentDateTime: string, newTime: string) => {
+
+            const dateObj = new Date(currentDateTime);
+            const datePart = dateObj.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD'
+            // Return the merged datetime string with the new time and a "+00" timezone offset
+            return `${datePart} ${newTime}:00+00`;
+        };
+
+        const currentEventDetails = await db.selectFrom('event').selectAll().where('eventId', '=', opts.input.eventId).execute();
+        console.log("check -> currentEventDetails", currentEventDetails)
         if (opts.input.desc) {
             updatePayload.desc = opts.input.desc;
         }
-        if (opts.input.timeStart) {
-            updatePayload.start = opts.input.timeStart;
+        if (opts.input.timeStart && currentEventDetails) {
+            updatePayload.start = mergeDateTime(currentEventDetails[0].start.toString(), opts.input.timeStart);
         }
-        if (opts.input.timeReminder) {
-            updatePayload.reminder = opts.input.timeReminder;
+        if (opts.input.timeReminder && currentEventDetails) {
+            updatePayload.reminder = mergeDateTime(currentEventDetails[0].reminder.toString(), opts.input.timeReminder);
         }
 
+        console.log("check updatePayload ->", updatePayload)
         await db.updateTable('event').where('eventId', '=', opts.input.eventId).set(
             updatePayload
         ).execute()

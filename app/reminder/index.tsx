@@ -16,6 +16,8 @@ import { IoCloseOutline } from "react-icons/io5";
 import { format } from "date-fns";
 
 const Reminder = () => {
+    const [modal, setModal] = useState(false);
+
     const [remindersObj, setRemindersObj] = useState({
         desc: '',
         reminder: '',
@@ -26,6 +28,13 @@ const Reminder = () => {
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
         onSettled() {
             useReminders.refetch()
+        }
+    })
+    const reminderEditMutation = api.ai.editReminder.useMutation({
+        onSettled() {
+            console.log("inside refetch reminderEditMutation")
+            useReminders.refetch()
+            setModal(false)
         }
     })
     const deleteReminderMutation = api.ai.deleteReminder.useMutation({
@@ -58,18 +67,23 @@ const Reminder = () => {
     }
 
     const handleEditReminder = (eventId: number | undefined) => {
+        if (!eventId) return null
         const startTime = new Date(`1970-01-01T${remindersObj.start}:00`);
         const reminderTime = new Date(`1970-01-01T${remindersObj.reminder}:00`);
 
-        console.log("eventId check ->", eventId)
-        console.log("desc check ->", remindersObj.desc)
-        console.log("start check ->", remindersObj.start)
-        console.log("reminder check ->", remindersObj.reminder)
+        console.log("eventId startTime ->", startTime)
+        console.log("eventId reminderTime ->", reminderTime)
 
-        if (reminderTime > startTime) {
-            console.log("Reminder is later than start time.");
-        } else if (reminderTime < startTime || reminderTime === startTime) {
-            console.log("Reminder is earlier than start time or the same.");
+        if (reminderTime < startTime) {
+            console.log("Reminder is earlier than start time.");
+            reminderEditMutation.mutate({ eventId: eventId, desc: remindersObj.desc, timeStart: remindersObj.start, timeReminder: remindersObj.reminder }, {
+                onSuccess() {
+                    console.log("inside refetch")
+                    useReminders.refetch()
+                }
+            })
+        } else if (reminderTime > startTime || reminderTime === startTime) {
+            console.error("Reminder is later than start time or the same.");
         }
 
 
@@ -86,14 +100,14 @@ const Reminder = () => {
 
 
             <div className='place-items-center w-2/4 h-full grid grid-cols-2 gap-8 '>
-                {reminders && reminders.map((opts) => {
+                {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
                     return (
-                        <div className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
+                        <div key={index} className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
                             <div className='absolute right-2 justify-end flex'>
                                 <div className='flex gap-2'>
-                                    <Dialog>
+                                    <Dialog open={modal} onOpenChange={setModal} >
                                         <DialogTrigger asChild className='w-full relative'>
                                             <RxPencil1 className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>

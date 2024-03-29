@@ -5,8 +5,8 @@ export interface Event {
     desc?: string;
     phone?: string;
     status: boolean;
-    reminder: Date;
-    start: start;
+    reminder: string;
+    start: string;
     createdAt: end;
 }
 
