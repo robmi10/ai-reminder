@@ -33,7 +33,7 @@ const VoiceRecognition = () => {
         setTranscription(data.text)
       }
     })
-  }, [audio, generateTextMutation])
+  }, [audio])
 
   console.log("generateTextMutation status ->", generateTextMutation.status)
 
@@ -63,16 +63,16 @@ const VoiceRecognition = () => {
             }} />}
             {audio && <audio src={audio} controls></audio>}
           </div>
-          {/* <div className='flex w-full flex-row gap-8 justify-between text-sm'>
-            <div>
+          <div className='flex w-full flex-row gap-8 justify-between text-sm'>
+            {/* <div>
               <span>TRANSCRIPTION</span>
               {transcription && <WordByWordRenderer delay={150} text={transcription} />}
             </div>
             <div>
               <span>REMINDERS</span>
               {reminder && <WordByWordRenderer delay={150} text={reminder} />}
-            </div>
-          </div> */}
+            </div> */}
+          </div>
         </div>}
         {generateTextMutation.isPending && <div>
           <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
