@@ -1,14 +1,11 @@
 
 "use client"
-import VoiceRecognition from "@/app/components/speechrecorder";
 import { Button } from "@/components/ui/button";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import Reminders from "./components/reminders";
 import Firstpage from "./home/firstpage";
 import Secondpage from "./home/secondpage";
 import Thirdpage from "./home/thirdpage";
 import Footer from "./components/footer/footer";
-import Buttonanimate from "./components/animation/buttonanimate";
 import Recorder from "./recorder/recorder";
 
 export default function Home() {
