@@ -3,6 +3,7 @@ import { z } from "zod";
 import Replicate from "replicate";
 import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
+import { format } from "date-fns";
 
 const client = new OpenAI({
     apiKey: process.env.TOGETHER_API_KEY,
@@ -68,8 +69,6 @@ export const aiRouter = createTRPCRouter({
                     console.log("opt in array ->", opt)
                     const startDateTimeISO = `${opt.date}T${opt.time}:00`; // Assuming 'time' doesn't include seconds
                     const startDateTime = new Date(startDateTimeISO);
-
-                    // Calculate the reminder time as a new Date object based on the 'start' time minus 'reminder' minutes
                     const reminderTime = new Date(startDateTime.getTime() - (opt.reminder * 60000)); // 60000 ms in a minute
 
                     console.log("startDateTimeISO ->", startDateTimeISO)
@@ -79,8 +78,8 @@ export const aiRouter = createTRPCRouter({
                     await db.insertInto('event').values({
                         userId: 1,
                         desc: opt.task,
-                        start: startDateTime.toString(),
-                        reminder: reminderTime.toString(), 
+                        start: startDateTime.toISOString(),
+                        reminder: reminderTime.toISOString(),
                         status: false,
                         email: 'robelmichael102@gmail.com',
                         phone: "0707276369",
@@ -106,30 +105,24 @@ export const aiRouter = createTRPCRouter({
     deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
     }),
-    editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string().optional(), timeReminder: z.string().optional() }))).mutation(async (opts) => {
+    editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {
         const updatePayload = { desc: '', start: '', reminder: '' };
 
-        console.log("inside editReminder: protectedProcedure updatePayload check")
+        console.log("inside editReminder: protectedProcedure updatePayload check ->", updatePayload)
+        console.log("check inputs ->", opts.input)
 
         const mergeDateTime = (currentDateTime: string, newTime: string) => {
-
             const dateObj = new Date(currentDateTime);
-            const datePart = dateObj.toISOString().split('T')[0]; // Gets 'YYYY-MM-DD'
-            // Return the merged datetime string with the new time and a "+00" timezone offset
+            const datePart = format(dateObj, 'yyyy-MM-dd');
             return `${datePart} ${newTime}:00+00`;
         };
 
         const currentEventDetails = await db.selectFrom('event').selectAll().where('eventId', '=', opts.input.eventId).execute();
         console.log("check -> currentEventDetails", currentEventDetails)
-        if (opts.input.desc) {
-            updatePayload.desc = opts.input.desc;
-        }
-        if (opts.input.timeStart && currentEventDetails) {
-            updatePayload.start = mergeDateTime(currentEventDetails[0].start.toString(), opts.input.timeStart);
-        }
-        if (opts.input.timeReminder && currentEventDetails) {
-            updatePayload.reminder = mergeDateTime(currentEventDetails[0].reminder.toString(), opts.input.timeReminder);
-        }
+
+        updatePayload.desc = opts.input.desc ? opts.input.desc : currentEventDetails[0].desc;
+        updatePayload.start = opts.input.timeStart ? mergeDateTime(currentEventDetails[0].start.toString(), opts.input.timeStart) : currentEventDetails[0].start;
+        updatePayload.reminder = opts.input.timeReminder ? mergeDateTime(currentEventDetails[0].reminder.toString(), opts.input.timeReminder) : currentEventDetails[0].reminder;
 
         console.log("check updatePayload ->", updatePayload)
         await db.updateTable('event').where('eventId', '=', opts.input.eventId).set(

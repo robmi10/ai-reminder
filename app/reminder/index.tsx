@@ -14,6 +14,9 @@ import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
 import { IoCloseOutline } from "react-icons/io5";
 import { format } from "date-fns";
+import { motion } from 'framer-motion'
+import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
+
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
@@ -22,7 +25,7 @@ const Reminder = () => {
         desc: '',
         reminder: '',
         start: '',
-
+        eventId: 0
     })
     const useReminders = api.ai.getUserReminders.useQuery({ userId: 1 })
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
@@ -30,6 +33,13 @@ const Reminder = () => {
             useReminders.refetch()
         }
     })
+
+    const iconVariants = {
+        initial: { scale: 0, opacity: 0 },
+        animate: { scale: 1, opacity: 1, transition: { type: "spring", duration: 0.5, ease: "easeInOut" } },
+    };
+
+
     const reminderEditMutation = api.ai.editReminder.useMutation({
         onSettled() {
             console.log("inside refetch reminderEditMutation")
@@ -45,8 +55,8 @@ const Reminder = () => {
 
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
-        if (!eventId) return null
-        console.log("inside handleSetReminderStatus", status)
+        if (!eventId) return false
+        console.log("inside handleSetReminderStatus", status, remindersObj.eventId)
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
                 console.log("inside refetch")
@@ -55,10 +65,8 @@ const Reminder = () => {
         })
     }
 
-    const handleDeleteReminder = (eventId: number | undefined) => {
-        if (!eventId) return null
-        console.log("inside handleDeleteReminder", eventId)
-        deleteReminderMutation.mutate({ eventId: eventId }, {
+    const handleDeleteReminder = () => {
+        deleteReminderMutation.mutate({ eventId: remindersObj.eventId }, {
             onSuccess() {
                 console.log("inside refetch deleted")
                 useReminders.refetch()
@@ -66,17 +74,19 @@ const Reminder = () => {
         })
     }
 
-    const handleEditReminder = (eventId: number | undefined) => {
-        if (!eventId) return null
-        const startTime = new Date(`1970-01-01T${remindersObj.start}:00`);
-        const reminderTime = new Date(`1970-01-01T${remindersObj.reminder}:00`);
+    const handleEditReminder = () => {
 
-        console.log("eventId startTime ->", startTime)
-        console.log("eventId reminderTime ->", reminderTime)
+        const startTime = convertLocalTimeToUTCSimple(remindersObj.start)
+        const reminderTime = convertLocalTimeToUTCSimple(remindersObj.reminder)
+
 
         if (reminderTime < startTime) {
             console.log("Reminder is earlier than start time.");
-            reminderEditMutation.mutate({ eventId: eventId, desc: remindersObj.desc, timeStart: remindersObj.start, timeReminder: remindersObj.reminder }, {
+
+            console.log("startTime ->", startTime)
+            console.log("reminderTime ->", reminderTime)
+
+            reminderEditMutation.mutate({ eventId: remindersObj.eventId, desc: remindersObj.desc, timeStart: startTime, timeReminder: reminderTime }, {
                 onSuccess() {
                     console.log("inside refetch")
                     useReminders.refetch()
@@ -85,9 +95,16 @@ const Reminder = () => {
         } else if (reminderTime > startTime || reminderTime === startTime) {
             console.error("Reminder is later than start time or the same.");
         }
-
-
     }
+
+    const extractTime = (isoString: any) => {
+        const date = new Date(isoString);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        console.log("isoString ->", isoString)
+        console.log(`extractTime -> ${hours}:${minutes}`)
+        return `${hours}:${minutes}`;
+    };
 
     const reminders = useReminders.data && useReminders?.data
 
@@ -104,11 +121,21 @@ const Reminder = () => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
                     return (
-                        <div key={index} className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
+                        <motion.div initial="initial"
+                            animate="animate" variants={iconVariants} key={index} className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
                             <div className='absolute right-2 justify-end flex'>
                                 <div className='flex gap-2'>
                                     <Dialog open={modal} onOpenChange={setModal} >
-                                        <DialogTrigger asChild className='w-full relative'>
+                                        <DialogTrigger
+                                            onClick={() => {
+                                                setRemindersObj({
+                                                    desc: opts.desc,
+                                                    start: extractTime(opts.start),
+                                                    reminder: extractTime(opts.reminder),
+                                                    eventId: opts.eventId
+                                                });
+                                            }}
+                                            asChild className='w-full relative'>
                                             <RxPencil1 className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
                                         <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
@@ -129,8 +156,8 @@ const Reminder = () => {
                                                 <Input value={remindersObj.reminder} onChange={(e) => { setRemindersObj(current => ({ ...current, reminder: e.target.value })) }} type='time' placeholder="Reminder " className='rounded-3xl border-stone-200 shadow-3xl placeholder:text-stone-400' />
                                             </div>
                                             <div className='flex gap-4 justify-end'>
-                                                <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>CANCEL</Button>
-                                                <Button onClick={() => { handleEditReminder(opts.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
+                                                <Button onClick={() => { setModal(false) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>CANCEL</Button>
+                                                <Button onClick={() => { handleEditReminder() }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
                                             </div>
                                         </DialogContent>
                                     </Dialog>
@@ -145,7 +172,7 @@ const Reminder = () => {
                                                 This action cannot be undone. This will permanently delete your reminder.
                                             </DialogDescription>
                                             <div className='flex gap-4'>
-                                                <Button onClick={() => { handleDeleteReminder(opts.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
+                                                <Button onClick={() => { handleDeleteReminder() }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
                                                 <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>NO</Button>
                                             </div>
                                         </DialogContent>
@@ -164,21 +191,23 @@ const Reminder = () => {
                                 <span>{reminderDate}</span>
                             </div>
 
-                            {!opts.status && <div className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
-                                handleSetReminderStatus(opts.eventId, !opts.status)
-                            }}><IoCheckmark size={20} /></div>}
-                            {opts.status && <div className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
-                                handleSetReminderStatus(opts.eventId, !opts.status)
-                            }}><IoCloseOutline size={20} /></div>}
-                        </div>
+                            {!opts.status && <motion.div
+                                initial="initial"
+                                animate="animate"
+                                variants={iconVariants} className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
+                                    handleSetReminderStatus(opts.eventId, !opts.status)
+                                }}><IoCheckmark size={20} /></motion.div>}
+                            {opts.status && <motion.div
+                                initial="initial"
+                                animate="animate"
+                                variants={iconVariants} className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
+                                    handleSetReminderStatus(opts.eventId, !opts.status)
+                                }}><IoCloseOutline size={20} /></motion.div>}
+                        </motion.div>
                     )
                 }
-
-
                 )}
-
             </div>
-
         </div >
     )
 }
