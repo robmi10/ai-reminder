@@ -108,9 +108,6 @@ export const aiRouter = createTRPCRouter({
     editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {
         const updatePayload = { desc: '', start: '', reminder: '' };
 
-        console.log("inside editReminder: protectedProcedure updatePayload check ->", updatePayload)
-        console.log("check inputs ->", opts.input)
-
         const mergeDateTime = (currentDateTime: string, newTime: string) => {
             const dateObj = new Date(currentDateTime);
             const datePart = format(dateObj, 'yyyy-MM-dd');
@@ -118,13 +115,11 @@ export const aiRouter = createTRPCRouter({
         };
 
         const currentEventDetails = await db.selectFrom('event').selectAll().where('eventId', '=', opts.input.eventId).execute();
-        console.log("check -> currentEventDetails", currentEventDetails)
 
         updatePayload.desc = opts.input.desc ? opts.input.desc : currentEventDetails[0].desc;
         updatePayload.start = opts.input.timeStart ? mergeDateTime(currentEventDetails[0].start.toString(), opts.input.timeStart) : currentEventDetails[0].start;
         updatePayload.reminder = opts.input.timeReminder ? mergeDateTime(currentEventDetails[0].reminder.toString(), opts.input.timeReminder) : currentEventDetails[0].reminder;
 
-        console.log("check updatePayload ->", updatePayload)
         await db.updateTable('event').where('eventId', '=', opts.input.eventId).set(
             updatePayload
         ).execute()

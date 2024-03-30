@@ -42,7 +42,6 @@ const Reminder = () => {
 
     const reminderEditMutation = api.ai.editReminder.useMutation({
         onSettled() {
-            console.log("inside refetch reminderEditMutation")
             useReminders.refetch()
             setModal(false)
         }
@@ -59,7 +58,6 @@ const Reminder = () => {
         console.log("inside handleSetReminderStatus", status, remindersObj.eventId)
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
-                console.log("inside refetch")
                 useReminders.refetch()
             }
         })
@@ -68,7 +66,6 @@ const Reminder = () => {
     const handleDeleteReminder = () => {
         deleteReminderMutation.mutate({ eventId: remindersObj.eventId }, {
             onSuccess() {
-                console.log("inside refetch deleted")
                 useReminders.refetch()
             }
         })
@@ -79,13 +76,7 @@ const Reminder = () => {
         const startTime = convertLocalTimeToUTCSimple(remindersObj.start)
         const reminderTime = convertLocalTimeToUTCSimple(remindersObj.reminder)
 
-
         if (reminderTime < startTime) {
-            console.log("Reminder is earlier than start time.");
-
-            console.log("startTime ->", startTime)
-            console.log("reminderTime ->", reminderTime)
-
             reminderEditMutation.mutate({ eventId: remindersObj.eventId, desc: remindersObj.desc, timeStart: startTime, timeReminder: reminderTime }, {
                 onSuccess() {
                     console.log("inside refetch")
@@ -101,8 +92,6 @@ const Reminder = () => {
         const date = new Date(isoString);
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
-        console.log("isoString ->", isoString)
-        console.log(`extractTime -> ${hours}:${minutes}`)
         return `${hours}:${minutes}`;
     };
 
