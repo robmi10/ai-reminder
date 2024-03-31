@@ -8,17 +8,17 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 
 const Thirdpage = () => {
     const { scrollYProgress } = useScroll()
-    const image1 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+    const image1 = useTransform(scrollYProgress, [0, 1], [0, 0]);
     const image1Scale = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
-    const image2 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+    const image2 = useTransform(scrollYProgress, [0, 1], [0, 0]);
     const image2Scale = useTransform(scrollYProgress, [0, 1], [0, 1]);
     return (
-        <div className='h-screen w-screen flex flex-col justify-center items-center bg-slate-50'>
+        <div className=' flex flex-col justify-center items-center gap-10'>
             <div className='mt-40'>
                 <Buttonanimate title={"Connect"} />
             </div>
-            <div className='flex flex-row h-full w-2/4 justify-center items-center mt-24 '>
+            <div className='flex flex-row h-full w-2/4 justify-center items-center '>
                 <motion.div style={{ y: image1, scale: image1Scale }} >
                     <Image alt="voice" className='rounded-2xl' src={voice} width={300} />
                 </motion.div>
