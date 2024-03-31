@@ -5,6 +5,8 @@ import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
 import { format } from "date-fns";
 import fs from "fs";
+import axios from 'axios'
+import path from "path";
 
 const client = new OpenAI({
     apiKey: process.env.TOGETHER_API_KEY,
@@ -16,11 +18,32 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+async function downloadFile(fileUrl: any, outputPath: any) {
+    try {
+        const response = await axios({
+            method: 'GET',
+            url: fileUrl,
+            responseType: 'stream',
+        });
+
+        const writer = fs.createWriteStream(outputPath);
+        response.data.pipe(writer);
+
+        return new Promise((resolve, reject) => {
+            writer.on('finish', resolve);
+            writer.on('error', reject);
+        });
+    } catch (error) {
+        console.error('Error downloading the file: ', error);
+    }
+}
+
 export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
         z.object({ audio: z.string() })
     ).mutation(async (opts) => {
         console.log("inside generateText now here", opts.input.audio)
+
         // const replicate = new Replicate({
         //     auth: process.env.REPLICATE_API_TOKEN,
         // });
@@ -44,67 +67,70 @@ export const aiRouter = createTRPCRouter({
         //     }
         // );
 
+        const fixedOutputPath = path.resolve(__dirname, 'downloadedAudio.wav');
+
+        await downloadFile(opts.input.audio, fixedOutputPath)
+
         const translation = await openai.audio.translations.create({
-            file: fs.createReadStream(opts.input.audio),
+            file: fs.createReadStream(fixedOutputPath),
             model: "whisper-1",
         });
 
         console.log("check translation ->", translation)
 
-        const text = "output?.transcription"
+        const text = translation.text
 
-        // const response = await client.chat.completions.create({
-        //     messages: [
-        //         {
-        //             role: 'system',
-        //             content: `Convert the text into structured task reminders as JSON objects. 
-        //             For each task, include 'task' (a brief description), 'date' (YYYY-MM-DD), 'time' (HH:MM in 24-hour format), and 'reminder' (minutes before the task).
-        //             Use today's date (${new Date().toISOString().split('T')[0]}) for relative references. 
-        //             Ensure the output follows this format:\n\n{\n  'task': 'Example task',\n  'date': 'YYYY-MM-DD',\n  'time': 'HH:MM',\n  'reminder': 'minutes before'\n}\n\nExtract and structure the task details from the input text accordingly.
-        //             If you don't find a reminder for a task use the latest one you've catched`
-        //         },
-        //         {
-        //             role: 'user',
-        //             content: text
-        //         }
-        //     ], model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        // })
+        const response = await client.chat.completions.create({
+            messages: [
+                {
+                    role: 'system',
+                    content: `Convert the text into structured task reminders as JSON objects. 
+                    For each task, include 'task' (a brief description), 'date' (YYYY-MM-DD), 'time' (HH:MM in 24-hour format), and 'reminder' (minutes before the task).
+                    Use today's date (${new Date().toISOString().split('T')[0]}) for relative references. 
+                    Ensure the output follows this format:\n\n{\n  'task': 'Example task',\n  'date': 'YYYY-MM-DD',\n  'time': 'HH:MM',\n  'reminder': 'minutes before'\n}\n\nExtract and structure the task details from the input text accordingly.
+                    If you don't find a reminder for a task use the latest reminder otherwise set a reminder 10 minnutes before time`
+                },
+                {
+                    role: 'user',
+                    content: text
+                }
+            ], model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        })
 
-        // const reminder = response.choices[0].message.content
-        // console.log(output);
-        // console.log("reminder ->", reminder)
-        // const reminderList = reminder && JSON.parse(reminder)
+        const reminder = response.choices[0].message.content
+        console.log("reminder ->", reminder)
+        const reminderList = reminder && JSON.parse(reminder)
 
-        // console.log("reminderList ->", reminderList)
-        // if (reminderList) {
-        //     try {
-        //         await Promise.all(reminderList.map(async (opt: any) => {
-        //             console.log("opt in array ->", opt)
-        //             const startDateTimeISO = `${opt.date}T${opt.time}:00`; // Assuming 'time' doesn't include seconds
-        //             const startDateTime = new Date(startDateTimeISO);
-        //             const reminderTime = new Date(startDateTime.getTime() - (opt.reminder * 60000)); // 60000 ms in a minute
+        console.log("reminderList ->", reminderList)
+        if (reminderList) {
+            try {
+                await Promise.all(reminderList.map(async (opt: any) => {
+                    console.log("opt in array ->", opt)
+                    const startDateTimeISO = `${opt.date}T${opt.time}:00`; // Assuming 'time' doesn't include seconds
+                    const startDateTime = new Date(startDateTimeISO);
+                    const reminderTime = new Date(startDateTime.getTime() - (opt.reminder * 60000)); // 60000 ms in a minute
 
-        //             console.log("startDateTimeISO ->", startDateTimeISO)
-        //             console.log("startDateTime ->", startDateTime)
-        //             console.log("reminderTime ->", reminderTime)
+                    console.log("startDateTimeISO ->", startDateTimeISO)
+                    console.log("startDateTime ->", startDateTime)
+                    console.log("reminderTime ->", reminderTime)
 
-        //             await db.insertInto('event').values({
-        //                 userId: 1,
-        //                 desc: opt.task,
-        //                 start: startDateTime.toISOString(),
-        //                 reminder: reminderTime.toISOString(),
-        //                 status: false,
-        //                 email: 'robelmichael102@gmail.com',
-        //                 phone: "0707276369",
-        //             }).execute()
-        //         }));
-        //         console.log('All reminders have been inserted successfully.');
+                    await db.insertInto('event').values({
+                        userId: 1,
+                        desc: opt.task,
+                        start: startDateTime.toISOString(),
+                        reminder: reminderTime.toISOString(),
+                        status: false,
+                        email: 'robelmichael102@gmail.com',
+                        phone: "0707276369",
+                    }).execute()
+                }));
+                console.log('All reminders have been inserted successfully.');
 
-        //     } catch (error) {
-        //         console.error(error)
-        //     }
-        // }
-        // return { reminder, text }
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        return { reminder, text }
     }),
     getUserReminders: protectedProcedure.input((z.object({ userId: z.number() }))).query(async (opts) => {
         const reminders = await db.selectFrom('event').selectAll().where('userId', '=', opts.input.userId).orderBy('start asc').execute()
@@ -116,6 +142,7 @@ export const aiRouter = createTRPCRouter({
         }).execute()
     }),
     deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
+        console.log("eventId delete ->", opts.input.eventId)
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
     }),
     editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {

@@ -19,7 +19,7 @@ export const useRecorder = () => {
         const { data, error } = await supabase.storage.from('reminders').upload(filePath, audioBlob, {
             cacheControl: '3600',
             upsert: false,
-            
+
         })
         console.log("data check now here ->", data)
 
@@ -43,6 +43,7 @@ export const useRecorder = () => {
 
     const startRecorder = () => {
         if (mediaRecorder) {
+            console.log("inside startRecorder")
             mediaRecorder.start()
             setRecorder(true);
         }

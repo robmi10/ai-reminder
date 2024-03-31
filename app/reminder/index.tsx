@@ -47,9 +47,7 @@ const Reminder = () => {
         }
     })
     const deleteReminderMutation = api.ai.deleteReminder.useMutation({
-        onSettled() {
-            console.log("it deleted now!")
-        }
+
     })
 
 
@@ -63,10 +61,13 @@ const Reminder = () => {
         })
     }
 
-    const handleDeleteReminder = () => {
-        deleteReminderMutation.mutate({ eventId: remindersObj.eventId }, {
+    const handleDeleteReminder = (eventId: number | undefined) => {
+        if (!eventId) return false
+        deleteReminderMutation.mutate({ eventId: eventId }, {
             onSuccess() {
                 useReminders.refetch()
+                console.log("it deleted now!")
+                setModal(false)
             }
         })
     }
@@ -146,7 +147,7 @@ const Reminder = () => {
                                             </div>
                                             <div className='flex gap-4 justify-end'>
                                                 <Button onClick={() => { setModal(false) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>CANCEL</Button>
-                                                <Button onClick={() => { handleEditReminder() }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
+                                                <Button onClick={() => { handleEditReminder(), setModal(false) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
                                             </div>
                                         </DialogContent>
                                     </Dialog>
@@ -161,7 +162,7 @@ const Reminder = () => {
                                                 This action cannot be undone. This will permanently delete your reminder.
                                             </DialogDescription>
                                             <div className='flex gap-4'>
-                                                <Button onClick={() => { handleDeleteReminder() }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
+                                                <Button onClick={() => { handleDeleteReminder(opts.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
                                                 <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>NO</Button>
                                             </div>
                                         </DialogContent>
