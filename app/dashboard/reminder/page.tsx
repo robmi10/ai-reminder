@@ -100,13 +100,11 @@ const Reminder = () => {
     const reminders = useReminders.data && useReminders?.data
 
     return (
-        <div className='h-full w-full flex items-center justify-center flex-col gap-12'>
+        <div className='w-full flex items-center justify-center flex-col gap-12'>
             <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
             <div className='absolute top-0 p-8 left-8'>
-                <Buttonanimate href="/dashboard" back={true} />
+                <Buttonanimate href="/dashboard/recorder" back={true} />
             </div>
-
-
             <div className='place-items-center w-2/4 h-full grid grid-cols-2 gap-8 '>
                 {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");

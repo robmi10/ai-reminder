@@ -5,7 +5,7 @@ import HomePage from "./home";
 import { useEffect } from "react";
 // import Dashboard from "./dashboard";
 import { useRouter } from 'next/navigation'
-import Dashboard from "./dashboard/page";
+import Dashboard from "./dashboard/layout";
 
 export default function Home() {
   const { isSignedIn } = useUser();
@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     console.log("isSignedIn check ->", isSignedIn)
     if (isSignedIn) {
-      router.push('/dashboard');
+      router.push('/dashboard/recorder');
     } else if (!isSignedIn) {
       router.push('/');
     }

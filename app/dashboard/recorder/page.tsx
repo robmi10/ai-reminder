@@ -7,6 +7,7 @@ import Buttonanimate from '../../components/animation/buttonanimate'
 
 const Recorder = () => {
     const { transcription, reminder } = useReminderStore()
+
     console.log("transcription ->", transcription)
     return (
         <div className='p-4 bg-stone-50 space-y-10 items-center flex flex-col'>
@@ -20,8 +21,8 @@ const Recorder = () => {
                 <VoiceRecognition />
             </>
             }
-            {reminder && <Reminder />
-            }
+            {/* {reminder && <Reminder />
+            } */}
         </div>
     )
 }
