@@ -1,41 +1,28 @@
 
 "use client"
-import { Button } from "@/components/ui/button";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import Firstpage from "./home/firstpage";
-import Secondpage from "./home/secondpage";
-import Thirdpage from "./home/thirdpage";
-import Footer from "./components/footer/footer";
-import Recorder from "./recorder/recorder";
+import { useUser } from "@clerk/nextjs";
+import HomePage from "./home";
+import { useEffect } from "react";
+// import Dashboard from "./dashboard";
+import { useRouter } from 'next/navigation'
+import Dashboard from "./dashboard/page";
 
 export default function Home() {
   const { isSignedIn } = useUser();
+  const router = useRouter()
+
+  useEffect(() => {
+    console.log("isSignedIn check ->", isSignedIn)
+    if (isSignedIn) {
+      router.push('/dashboard');
+    } else if (!isSignedIn) {
+      router.push('/');
+    }
+  }, [isSignedIn, router]);
 
   return (
     <div className="h-full space-y-8 w-screen bg-stone-50">
-      {!isSignedIn &&
-        <div>
-          <div className="flex justify-end p-4">
-            <SignInButton>
-              <Button className="w-auto shadow-lg rounded-full bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500"> Sign In</Button>
-              {/* <Buttonanimate title={"Sign in"} /> */}
-            </SignInButton>
-          </div>
-          <Firstpage />
-          <Secondpage />
-          <Thirdpage />
-          <Footer />
-        </div>
-      }
-      {isSignedIn && <div className="space-y-8 w-screen h-screen">
-        <div className="flex justify-end p-4">
-          <SignOutButton>
-            <Button className="w-auto shadow-lg rounded-full bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500"> Sign Out</Button>
-          </SignOutButton>
-        </div>
-        <Recorder />
-      </div>}
-
+      <HomePage />
     </div >
   );
 }

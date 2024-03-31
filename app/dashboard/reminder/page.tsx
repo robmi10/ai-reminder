@@ -1,8 +1,9 @@
+"use client"
 import React, { useState } from 'react'
 import { RxPencil1 } from "react-icons/rx";
 import { CiTrash } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
-import Buttonanimate from '../components/animation/buttonanimate';
+import Buttonanimate from '../../components/animation/buttonanimate';
 import {
     Dialog,
     DialogContent,
@@ -102,7 +103,7 @@ const Reminder = () => {
         <div className='h-full w-full flex items-center justify-center flex-col gap-12'>
             <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
             <div className='absolute top-0 p-8 left-8'>
-                <Buttonanimate front={true} />
+                <Buttonanimate back={true} />
             </div>
 
 
