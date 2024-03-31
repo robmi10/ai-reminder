@@ -3,15 +3,27 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { GoArrowUpRight, GoArrowUpLeft, } from "react-icons/go";
 import { BiSolidBellRing } from "react-icons/bi";
 import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'next/navigation';
 
 interface props {
     title?: string,
     back?: boolean,
-    front?: boolean
+    front?: boolean,
+    href?: string
 }
 
-const Buttonanimate = ({ title, back, front }: props) => {
+const Buttonanimate = ({ title, back, front, href }: props) => {
     const [isHover, setIsHover] = useState(false)
+    const router = useRouter();
+
+    const handleButtonClick = () => {
+        if (href) {
+            router.push(href);
+        } else {
+            console.log("Button clicked without navigation path");
+        }
+    };
+
 
     const variants = {
         initial: { scale: 0, opacity: 0 },
@@ -62,7 +74,7 @@ const Buttonanimate = ({ title, back, front }: props) => {
                     exit="initial"
                     variants={variants
                     }>
-                    <motion.span variants={iconVariants} animate={isHover ? "hover" : "initial"} className={twMerge('flex z-20 items-center h-full text-white',
+                    <motion.span onClick={handleButtonClick} variants={iconVariants} animate={isHover ? "hover" : "initial"} className={twMerge('flex z-20 items-center h-full text-white',
                         !back && !front && 'absolute right-5'
                     )}
                     >
