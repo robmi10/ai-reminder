@@ -102,7 +102,7 @@ const Reminder = () => {
         <div className='h-full w-full flex items-center justify-center flex-col gap-12'>
             <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
             <div className='absolute top-0 p-8 left-8'>
-                <Buttonanimate back={true} />
+                <Buttonanimate front={true} />
             </div>
 
 

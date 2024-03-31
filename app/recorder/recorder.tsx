@@ -14,7 +14,7 @@ const Recorder = () => {
         <div className='p-4 bg-stone-50 space-y-10 items-center flex flex-col'>
 
             <div className='absolute top-0 p-8 left-8'>
-                <Buttonanimate back={true} />
+                <Buttonanimate front={true} />
                 <span className='text-xs'>Go to reminders</span>
             </div>
 
