@@ -8,11 +8,12 @@ import { useRouter } from 'next/navigation'
 import Dashboard from "./dashboard/layout";
 
 export default function Home() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const router = useRouter()
 
   useEffect(() => {
     console.log("isSignedIn check ->", isSignedIn)
+    console.log("isLoading check ->", !isLoaded)
     if (isSignedIn) {
       router.push('/dashboard/recorder');
     } else if (!isSignedIn) {

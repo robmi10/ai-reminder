@@ -15,7 +15,6 @@ const HomePage = () => {
                 <div className="flex justify-end p-4">
                     <SignInButton>
                         <Button className="w-auto shadow-lg rounded-full bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500"> Sign In</Button>
-                        {/* <Buttonanimate title={"Sign in"} /> */}
                     </SignInButton>
                 </div>
                 <Firstpage />

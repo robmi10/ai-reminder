@@ -8,7 +8,7 @@ import Footer from '../components/footer/footer'
 import { Toaster } from '@/components/ui/toaster'
 
 interface DashboardProps {
-    children?: ReactNode; // This allows any valid React element(s) as children
+    children?: ReactNode;
 }
 const Dashboard = ({ children }: DashboardProps) => {
     const router = useRouter();
