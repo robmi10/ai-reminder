@@ -15,7 +15,6 @@ export default function RootLayout({
       <Provider>
         <html lang="en">
           <body>{children}</body>
-          <Footer />
         </html>
       </Provider>
     </ClerkProvider>

@@ -27,6 +27,7 @@ const Dashboard = ({ children }: DashboardProps) => {
             {children}
             <Toaster />
         </div>
+        <Footer />
     </>
     )
 }

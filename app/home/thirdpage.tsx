@@ -18,7 +18,7 @@ const Thirdpage = () => {
             <div className='mt-40'>
                 <Buttonanimate title={"Connect"} />
             </div>
-            <div className='flex flex-row h-full w-2/4 justify-center items-center '>
+            <div className='flex flex-row h-full w-2/4 justify-center items-center mb-24'>
                 <motion.div style={{ y: image1, scale: image1Scale }} >
                     <Image alt="voice" className='rounded-2xl' src={voice} width={300} />
                 </motion.div>
