@@ -17,10 +17,12 @@ import { IoCloseOutline } from "react-icons/io5";
 import { format } from "date-fns";
 import { motion } from 'framer-motion'
 import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
+import { useToast } from "@/components/ui/use-toast"
 
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
+    const { toast } = useToast()
 
     const [remindersObj, setRemindersObj] = useState({
         desc: '',
@@ -54,10 +56,15 @@ const Reminder = () => {
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
         if (!eventId) return false
-        console.log("inside handleSetReminderStatus", status, remindersObj.eventId)
+        console.log("inside handleSetReminderStatus", status, eventId)
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
                 useReminders.refetch()
+                toast({
+                    variant: "success",
+                    title: "Status Update",
+                    description: "Reminder status is updated.",
+                })
             }
         })
     }
@@ -69,6 +76,11 @@ const Reminder = () => {
                 useReminders.refetch()
                 console.log("it deleted now!")
                 setModal(false)
+                toast({
+                    variant: "destructive",
+                    title: "Remove task",
+                    description: "Task is deleted.",
+                })
             }
         })
     }
@@ -100,10 +112,11 @@ const Reminder = () => {
     const reminders = useReminders.data && useReminders?.data
 
     return (
-        <div className='w-full flex items-center justify-center flex-col gap-12'>
+        <div className='w-full min-h-96 flex items-center justify-center flex-col gap-12'>
             <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
             <div className='absolute top-0 p-8 left-8'>
                 <Buttonanimate href="/dashboard/recorder" back={true} />
+                <span className='text-xs'>Go to recorder</span>
             </div>
             <div className='place-items-center w-2/4 h-full grid grid-cols-2 gap-8 '>
                 {reminders && reminders.map((opts, index) => {
