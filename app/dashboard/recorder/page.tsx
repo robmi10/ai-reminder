@@ -12,7 +12,7 @@ const Recorder = () => {
     return (
         <div className='p-4 space-y-10 items-center flex flex-col'>
             <div className='absolute top-0 p-8 left-8'>
-                <Buttonanimate href={"/dashboard/reminder"} front={true} />
+                <Buttonanimate href="/dashboard/reminder" front={true} />
                 <span className='text-xs'>Go to reminders</span>
             </div>
             {!reminder && <>

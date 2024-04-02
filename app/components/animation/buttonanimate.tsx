@@ -20,6 +20,7 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
 
     const handleButtonClick = () => {
         if (href) {
+            console.log("href ->", href)
             router.push(href);
         } else {
             console.log("Button clicked without navigation path");

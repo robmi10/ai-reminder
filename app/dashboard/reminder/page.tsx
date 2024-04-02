@@ -31,7 +31,7 @@ const Reminder = () => {
         start: '',
         eventId: 0
     })
-    const [reminders, useReminders] = api.ai.getUserReminders.useSuspenseQuery({ userId: 1 })
+    const useReminders = api.ai.getUserReminders.useQuery({ userId: 1 })
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
         onSettled() {
             useReminders.refetch()
@@ -43,14 +43,12 @@ const Reminder = () => {
         animate: { scale: 1, opacity: 1, transition: { type: "spring", duration: 0.5, ease: "easeInOut" } },
     };
 
-
     const reminderEditMutation = api.ai.editReminder.useMutation({})
     const deleteReminderMutation = api.ai.deleteReminder.useMutation({})
 
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
         if (!eventId) return false
-        console.log("inside handleSetReminderStatus", status, eventId)
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
                 useReminders.refetch()
@@ -115,7 +113,7 @@ const Reminder = () => {
         return `${hours}:${minutes}`;
     };
 
-    // const reminders = useReminders.data && useReminders?.data
+    const reminders = useReminders.data && useReminders?.data
     if (useReminders.isLoading) return <Loading />
 
     return (
