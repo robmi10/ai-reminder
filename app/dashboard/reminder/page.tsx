@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { motion } from 'framer-motion'
 import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
 import { useToast } from "@/components/ui/use-toast"
+import Loading from '@/app/components/loader/loading';
 
 
 const Reminder = () => {
@@ -30,7 +31,7 @@ const Reminder = () => {
         start: '',
         eventId: 0
     })
-    const useReminders = api.ai.getUserReminders.useQuery({ userId: 1 })
+    const [reminders, useReminders] = api.ai.getUserReminders.useSuspenseQuery({ userId: 1 })
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
         onSettled() {
             useReminders.refetch()
@@ -77,7 +78,7 @@ const Reminder = () => {
                 console.log("it deleted now!")
                 setModal(false)
                 toast({
-                    variant: "destructive",
+                    variant: "success",
                     title: "Remove task",
                     description: "Task is deleted.",
                 })
@@ -109,10 +110,11 @@ const Reminder = () => {
         return `${hours}:${minutes}`;
     };
 
-    const reminders = useReminders.data && useReminders?.data
+    // const reminders = useReminders.data && useReminders?.data
+    if (useReminders.isLoading) return <Loading />
 
     return (
-        <div className='w-full min-h-96 flex items-center justify-center flex-col gap-12'>
+        <div className='w-full min-h-96 flex pb-16 items-center justify-center flex-col gap-12'>
             <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
             <div className='absolute top-0 p-8 left-8'>
                 <Buttonanimate href="/dashboard/recorder" back={true} />

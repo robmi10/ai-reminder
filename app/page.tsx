@@ -6,6 +6,9 @@ import { useEffect } from "react";
 // import Dashboard from "./dashboard";
 import { useRouter } from 'next/navigation'
 import Dashboard from "./dashboard/layout";
+import { BouncerLoader } from "./components/animation/bouncer";
+import Loading from "./components/loader/loading";
+import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
@@ -13,17 +16,21 @@ export default function Home() {
 
   useEffect(() => {
     console.log("isSignedIn check ->", isSignedIn)
-    console.log("isLoading check ->", !isLoaded)
     if (isSignedIn) {
       router.push('/dashboard/recorder');
     } else if (!isSignedIn) {
       router.push('/');
     }
-  }, [isSignedIn, router]);
+  }, [isSignedIn, router, isLoaded]);
 
   return (
     <div className="h-full space-y-8 w-screen bg-stone-50">
-      <HomePage />
+      {!isSignedIn && <ClerkLoaded>
+        <HomePage />
+      </ClerkLoaded>}
+      <ClerkLoading>
+        <Loading />
+      </ClerkLoading>
     </div >
   );
 }

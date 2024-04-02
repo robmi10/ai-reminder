@@ -1,8 +1,8 @@
 import { Toaster } from "@/components/ui/toaster";
 import Provider from "./_trpc/provider";
 import "./globals.css";
-import { ClerkProvider } from '@clerk/nextjs'
 import Footer from "./components/footer/footer";
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/nextjs";
 
 
 export default function RootLayout({

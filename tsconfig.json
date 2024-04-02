@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/components/animation/bouncer.js"  ],
   "exclude": [
     "node_modules"
   ]
