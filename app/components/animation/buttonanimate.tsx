@@ -61,14 +61,12 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
                     {title}</motion.span>}
 
                 {back && !front && !isHover && <GoArrowUpLeft size={15} />}
-                {/* {isHover && !back && !front && <GoArrowUpRight size={15} />} */}
                 {front && !back && !isHover && <BiSolidBellRing size={14} />}
 
             </motion.button >}
 
             {login &&
                 <SignInButton>
-
                     <motion.button
                         onClick={() => { console.log("button animate pressed") }}
                         whileHover="hover" className={twMerge('relative h-12 w-36 rounded-full flex z-5 justify-center items-center border bg-gray-500 text-white',
@@ -79,9 +77,8 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
 
                         {back && !front && !isHover && <GoArrowUpLeft size={15} />}
                         {front && !back && !isHover && <BiSolidBellRing size={14} />}
-
-
-                    </motion.button ></SignInButton>}
+                    </motion.button >
+                </SignInButton>}
             <AnimatePresence>
                 {isHover && <motion.button
                     onClick={() => { console.log("button animate pressed second") }}
