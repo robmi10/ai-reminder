@@ -44,15 +44,8 @@ const Reminder = () => {
     };
 
 
-    const reminderEditMutation = api.ai.editReminder.useMutation({
-        onSettled() {
-            useReminders.refetch()
-            setModal(false)
-        }
-    })
-    const deleteReminderMutation = api.ai.deleteReminder.useMutation({
-
-    })
+    const reminderEditMutation = api.ai.editReminder.useMutation({})
+    const deleteReminderMutation = api.ai.deleteReminder.useMutation({})
 
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
@@ -61,6 +54,7 @@ const Reminder = () => {
         reminderStatusMutation.mutate({ eventId: eventId, status }, {
             onSuccess() {
                 useReminders.refetch()
+                setModal(false)
                 toast({
                     variant: "success",
                     title: "Status Update",
@@ -75,7 +69,6 @@ const Reminder = () => {
         deleteReminderMutation.mutate({ eventId: eventId }, {
             onSuccess() {
                 useReminders.refetch()
-                console.log("it deleted now!")
                 setModal(false)
                 toast({
                     variant: "success",
@@ -94,12 +87,24 @@ const Reminder = () => {
         if (reminderTime < startTime) {
             reminderEditMutation.mutate({ eventId: remindersObj.eventId, desc: remindersObj.desc, timeStart: startTime, timeReminder: reminderTime }, {
                 onSuccess() {
-                    console.log("inside refetch")
                     useReminders.refetch()
+
+                    toast({
+                        variant: "success",
+                        title: "Edit task",
+                        description: "Task is edited.",
+                    })
                 }
             })
         } else if (reminderTime > startTime || reminderTime === startTime) {
             console.error("Reminder is later than start time or the same.");
+
+
+            toast({
+                variant: "destructive",
+                title: "Edit task error",
+                description: "Reminder is later than start time or the same.",
+            })
         }
     }
 
