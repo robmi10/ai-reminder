@@ -4,6 +4,7 @@ import wave from "../../public/images/soundwave.jpg"
 import Image from 'next/image'
 import Buttonanimate from '../components/animation/buttonanimate';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { SignInButton } from '@clerk/nextjs';
 
 
 const Thirdpage = () => {
@@ -16,7 +17,9 @@ const Thirdpage = () => {
     return (
         <div className=' flex flex-col justify-center items-center gap-10'>
             <div className='mt-40'>
-                <Buttonanimate title={"Connect"} />
+                {/* <SignInButton> */}
+                <Buttonanimate login={true} title={"Connect"} />
+                {/* </SignInButton> */}
             </div>
             <div className='flex flex-row h-full w-2/4 justify-center items-center mb-24'>
                 <motion.div style={{ y: image1, scale: image1Scale }} >
