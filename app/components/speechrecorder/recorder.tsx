@@ -51,15 +51,16 @@ export const useRecorder = () => {
 
     const stopRecorder = () => {
         if (mediaRecorder) {
+            console.log("stop recorder now")
             mediaRecorder.stop()
             console.log("check recorder ->", recorder)
             setRecorder(false);
+            setMediaRecorder(false)
         }
     }
 
     const initRecorder = (stream: any) => {
         const voiceRecorder = new MediaRecorder(stream)
-
         voiceRecorder.onstart = () => {
             chunks.current = [];
         }
@@ -73,7 +74,6 @@ export const useRecorder = () => {
             console.log("audioBlob ->", audioBlob)
             handleGenerateText(audioBlob);
         }
-
         setMediaRecorder(voiceRecorder);
     }
 

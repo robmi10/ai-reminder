@@ -19,11 +19,13 @@ import { motion } from 'framer-motion'
 import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
 import { useToast } from "@/components/ui/use-toast"
 import Loading from '@/app/components/loader/loading';
+import { useUser } from '@clerk/nextjs';
 
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
     const { toast } = useToast()
+    const { user } = useUser();
 
     const [remindersObj, setRemindersObj] = useState({
         desc: '',
@@ -31,7 +33,7 @@ const Reminder = () => {
         start: '',
         eventId: 0
     })
-    const useReminders = api.ai.getUserReminders.useQuery({ userId: 1 })
+    const useReminders = api.ai.getUserReminders.useQuery({ user: user })
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
         onSettled() {
             useReminders.refetch()

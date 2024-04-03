@@ -7,12 +7,14 @@ import Buttonanimate from '../../components/animation/buttonanimate'
 import { useRouter } from 'next/navigation'
 
 const Recorder = () => {
-    const { transcription, reminder } = useReminderStore()
+    const { transcription, reminder, setReminder } = useReminderStore()
     const router = useRouter()
 
     useEffect(() => {
         if (reminder) {
+            console.log("go to -> dashboard/reminder")
             router.push('/dashboard/reminder')
+            setReminder(false)
         }
     }, [reminder, router])
 

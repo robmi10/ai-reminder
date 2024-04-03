@@ -39,9 +39,15 @@ async function downloadFile(fileUrl: any, outputPath: any) {
 
 export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
-        z.object({ audio: z.string(), userId: z.number() })
+        z.object({ audio: z.string(), user: z.any() })
     ).mutation(async (opts) => {
         console.log("inside generateText now here", opts.input.audio)
+
+        const userId = opts.input.user?.id
+        const email = opts.input.user?.emailAddresses[0].emailAddress
+
+        console.log("inside input userId ->", userId)
+        console.log("inside input email ->", email)
 
         // const replicate = new Replicate({
         //     auth: process.env.REPLICATE_API_TOKEN,
@@ -113,17 +119,17 @@ export const aiRouter = createTRPCRouter({
                     console.log("startDateTime ->", startDateTime)
                     console.log("reminderTime ->", reminderTime)
                     await db.insertInto('event').values({
-                        userId: opts.input.userId,
+                        userId: userId,
                         desc: opt.task,
                         start: startDateTime.toISOString(),
                         reminder: reminderTime.toISOString(),
                         status: false,
-                        email: 'robelmichael102@gmail.com',
+                        email: email,
                         phone: "0707276369",
                     }).execute()
 
                     await db.insertInto('reminderUsage').values({
-                        userId: opts.input.userId,
+                        userId: userId,
                         date: reminderTime.toISOString(),
                         usageCount: 1
                     }).execute()
@@ -137,8 +143,9 @@ export const aiRouter = createTRPCRouter({
         }
         return { reminder, text }
     }),
-    getUserReminders: protectedProcedure.input((z.object({ userId: z.number() }))).query(async (opts) => {
-        const reminders = await db.selectFrom('event').selectAll().where('userId', '=', opts.input.userId).orderBy('start asc').execute()
+    getUserReminders: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
+        const userId = opts.input.user?.id
+        const reminders = await db.selectFrom('event').selectAll().where('userId', '=', userId).orderBy('start asc').execute()
         return reminders
     }),
 
