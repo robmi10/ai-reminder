@@ -1,6 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
-import Replicate from "replicate";
 import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
 import { format } from "date-fns";

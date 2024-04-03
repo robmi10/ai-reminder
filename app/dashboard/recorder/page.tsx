@@ -1,12 +1,22 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import VoiceRecognition from '../../components/speechrecorder'
 import Reminder from '../reminder/page'
 import { useReminderStore } from '@/zustand/reminderstore'
 import Buttonanimate from '../../components/animation/buttonanimate'
+import { useRouter } from 'next/navigation'
 
 const Recorder = () => {
     const { transcription, reminder } = useReminderStore()
+    const router = useRouter()
+
+    useEffect(() => {
+        if (reminder) {
+            router.push('/dashboard/reminder')
+        }
+
+    }, [reminder, router])
+
 
     console.log("transcription ->", transcription)
     return (
@@ -15,14 +25,9 @@ const Recorder = () => {
                 <Buttonanimate href="/dashboard/reminder" front={true} />
                 <span className='text-xs'>Go to reminders</span>
             </div>
-            {!reminder && <>
-                <span className='w-3/4 flex justify-center items-center text-xl font-medium'>
-                    Capture Your Reminders in a Snap</span>
-                <VoiceRecognition />
-            </>
-            }
-            {/* {reminder && <Reminder />
-            } */}
+            <span className='w-3/4 flex justify-center items-center text-xl font-medium'>
+                Capture Your Reminders in a Snap</span>
+            <VoiceRecognition />
         </div>
     )
 }

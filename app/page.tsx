@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     console.log("isSignedIn check ->", isSignedIn)
     if (isSignedIn) {
-      router.push('/dashboard/reminder');
+      router.push('/dashboard/recorder');
     } else if (!isSignedIn) {
       router.push('/');
     }
