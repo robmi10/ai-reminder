@@ -12,3 +12,7 @@ exports.up = function (knex) {
     });
 };
 
+// Down function to drop the table if necessary
+exports.down = function (knex) {
+    return knex.schema.dropTable('event');
+};

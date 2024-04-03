@@ -114,11 +114,14 @@ const Reminder = () => {
     };
 
     const reminders = useReminders.data && useReminders?.data
+    const hasReminders = reminders && reminders.length > 0
     if (useReminders.isLoading) return <Loading />
 
     return (
         <div className='w-full min-h-96 flex pb-16 items-center justify-center flex-col gap-12'>
-            <div className='text-2xl font-medium w-full flex items-center justify-center'>Reminders</div>
+            {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
+                <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
+            }
             <div className='absolute top-0 p-8 left-8'>
                 <Buttonanimate href="/dashboard/recorder" back={true} />
                 <span className='text-xs'>Go to recorder</span>

@@ -39,7 +39,7 @@ async function downloadFile(fileUrl: any, outputPath: any) {
 
 export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
-        z.object({ audio: z.string() })
+        z.object({ audio: z.string(), userId: z.number() })
     ).mutation(async (opts) => {
         console.log("inside generateText now here", opts.input.audio)
 
@@ -105,16 +105,15 @@ export const aiRouter = createTRPCRouter({
             try {
                 await Promise.all(reminderList.map(async (opt: any) => {
                     console.log("opt in array ->", opt)
-                    const startDateTimeISO = `${opt.date}T${opt.time}:00`; // Assuming 'time' doesn't include seconds
+                    const startDateTimeISO = `${opt.date}T${opt.time}:00`;
                     const startDateTime = new Date(startDateTimeISO);
-                    const reminderTime = new Date(startDateTime.getTime() - (opt.reminder * 60000)); // 60000 ms in a minute
+                    const reminderTime = new Date(startDateTime.getTime() - (opt.reminder * 60000));
 
                     console.log("startDateTimeISO ->", startDateTimeISO)
                     console.log("startDateTime ->", startDateTime)
                     console.log("reminderTime ->", reminderTime)
-
                     await db.insertInto('event').values({
-                        userId: 1,
+                        userId: opts.input.userId,
                         desc: opt.task,
                         start: startDateTime.toISOString(),
                         reminder: reminderTime.toISOString(),
@@ -122,6 +121,13 @@ export const aiRouter = createTRPCRouter({
                         email: 'robelmichael102@gmail.com',
                         phone: "0707276369",
                     }).execute()
+
+                    await db.insertInto('reminderUsage').values({
+                        userId: opts.input.userId,
+                        date: reminderTime.toISOString(),
+                        usageCount: 1
+                    }).execute()
+
                 }));
                 console.log('All reminders have been inserted successfully.');
 
@@ -134,6 +140,13 @@ export const aiRouter = createTRPCRouter({
     getUserReminders: protectedProcedure.input((z.object({ userId: z.number() }))).query(async (opts) => {
         const reminders = await db.selectFrom('event').selectAll().where('userId', '=', opts.input.userId).orderBy('start asc').execute()
         return reminders
+    }),
+
+    isRemindersUsageAcceptable: protectedProcedure.input((z.object({ userId: z.number() }))).query(async (opts) => {
+        const reminderUsage = await db.selectFrom('reminderUsage').selectAll().where('userId', '=', opts.input.userId).execute()
+
+        const usageLength = reminderUsage.length
+        console.log("check usageLength ->", usageLength)
     }),
     setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number(), status: z.boolean() }))).mutation(async (opts) => {
         await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({
@@ -163,4 +176,8 @@ export const aiRouter = createTRPCRouter({
             updatePayload
         ).execute()
     }),
+
+    // One function for checking how many reminders user already have its maximum 2 times for one day they can use it for one day.
+    // One function to check if the current reminders have passed and if so delete them.
+
 })

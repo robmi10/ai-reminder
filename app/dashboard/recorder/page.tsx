@@ -14,9 +14,7 @@ const Recorder = () => {
         if (reminder) {
             router.push('/dashboard/reminder')
         }
-
     }, [reminder, router])
-
 
     console.log("transcription ->", transcription)
     return (
