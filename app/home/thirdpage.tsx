@@ -1,6 +1,8 @@
 import React from 'react'
 import voice from "../../public/images/voice.jpg"
 import wave from "../../public/images/soundwave.jpg"
+import reminder from "../../public/images/reminder.jpg"
+import calender from "../../public/images/calender.jpg"
 import Image from 'next/image'
 import Buttonanimate from '../components/animation/buttonanimate';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -21,7 +23,7 @@ const Thirdpage = () => {
                 <Buttonanimate login={true} title={"Connect"} />
                 {/* </SignInButton> */}
             </div>
-            <div className='flex flex-row h-full w-2/4 justify-center items-center mb-24'>
+            <div className='flex flex-row h-full p-2 md:p-0 md:w-2/4 justify-center items-center mb-24'>
                 <motion.div style={{ y: image1, scale: image1Scale }} >
                     <Image alt="voice" className='rounded-2xl' src={voice} width={300} />
                 </motion.div>

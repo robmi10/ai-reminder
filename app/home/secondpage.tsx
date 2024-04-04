@@ -18,7 +18,7 @@ const Description = ({ children }: any) => {
 const Secondpage = () => {
     return (
         <div className="h-[190vh] w-screen bg-stone-50 flex items-center justify-center flex-col">
-            <div className="flex space-x-18">
+            <div className="flex flex-col md:flex-row space-x-18">
                 <span className="text-2xl sticky top-20 left-0 w-full h-[50vh] items-center font-medium items-top justify-center flex">Why AI Reminder?</span>
                 <div className="flex gap-16 flex-col">
                     {cardContent.map((card, i) => {
