@@ -33,7 +33,6 @@ export const useRecorder = () => {
         return fileUrl;
     }
 
-
     const handleGenerateText = async (blob: any) => {
         console.log("check now blob ->", blob)
         const audioUrl = await handleUploadAudio(blob) ?? ''

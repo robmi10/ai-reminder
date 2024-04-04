@@ -21,7 +21,6 @@ import { useToast } from "@/components/ui/use-toast"
 import Loading from '@/app/components/loader/loading';
 import { useUser } from '@clerk/nextjs';
 
-
 const Reminder = () => {
     const [modal, setModal] = useState(false);
     const { toast } = useToast()

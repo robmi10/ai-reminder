@@ -109,6 +109,7 @@ export const aiRouter = createTRPCRouter({
         console.log("reminderList ->", reminderList)
         if (reminderList) {
             try {
+                const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
                     console.log("opt in array ->", opt)
                     const startDateTimeISO = `${opt.date}T${opt.time}:00`;
@@ -128,29 +129,38 @@ export const aiRouter = createTRPCRouter({
                         phone: "0707276369",
                     }).execute()
 
-                    await db.insertInto('reminderUsage').values({
-                        userId: userId,
-                        date: reminderTime.toISOString(),
-                        usageCount: 1
-                    }).execute()
-
                 }));
+
+                await db.insertInto('reminder_usage').values({
+                    userId: userId,
+                    date: usageDate.toISOString(),
+                }).execute()
                 console.log('All reminders have been inserted successfully.');
 
             } catch (error) {
                 console.error(error)
             }
+
         }
         return { reminder, text }
     }),
+    // setReminderUsage: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
+    //     const userId = opts.input.user?.id
+    //     const usageDate = new Date();
+    //     await db.insertInto('reminder_usage').values({
+    //         userId: userId,
+    //         date: usageDate.toISOString(),
+    //     }).execute()
+    // }),
     getUserReminders: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
         const userId = opts.input.user?.id
         const reminders = await db.selectFrom('event').selectAll().where('userId', '=', userId).orderBy('start asc').execute()
         return reminders
     }),
 
-    isRemindersUsageAcceptable: protectedProcedure.input((z.object({ userId: z.number() }))).query(async (opts) => {
-        const reminderUsage = await db.selectFrom('reminderUsage').selectAll().where('userId', '=', opts.input.userId).execute()
+    isRemindersUsageAcceptable: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
+        const userId = opts.input.user?.id
+        const reminderUsage = await db.selectFrom('reminder_usage').selectAll().where('userId', '=', userId).execute()
 
         const usageLength = reminderUsage.length
         console.log("check usageLength ->", usageLength)

@@ -21,9 +21,15 @@ const VoiceRecognition = () => {
     }
   })
 
-  console.log("user ->", user)
-  console.log("user id ->", user?.id)
-  console.log("user emailAddresses->", user?.emailAddresses[0].emailAddress)
+  const setReminderUsageMutation = api.ai.setReminderStatus.useMutation({
+    onSettled() {
+      console.log("its settled now")
+    }
+  })
+
+  // console.log("user ->", user)
+  // console.log("user id ->", user?.id)
+  // console.log("user emailAddresses->", user?.emailAddresses[0].emailAddress)
 
   const variantAudio = {
     hover: { scale: 1.2, opacity: 1, transition: { type: "springer", duration: 0.2, ease: "easeInOut" } },
@@ -32,44 +38,38 @@ const VoiceRecognition = () => {
 
   useEffect(() => {
     console.log("inside go generateTextMutation")
-    audio && generateTextMutation.mutate({
-      audio: audio, user: user
-    }, {
-      onSuccess(data: any) {
-        console.log("its succesfull now")
-        setReminder(data.reminder)
-        setTranscription(data.text)
-        setAudio(false)
-      }
-    })
+    // audio && generateTextMutation.mutate({
+    //   audio: audio, user: user
+    // }, {
+    //   onSuccess(data: any) {
+    //     console.log("its succesfull now")
+    //     setReminder(data.reminder)
+    //     setTranscription(data.text)
+    //     setAudio(false)
+    //   }
+    // })
   }, [audio])
 
-  console.log("generateTextMutation status ->", generateTextMutation.status)
-
-  if (generateTextMutation.isPending) return <Loading />
   return (
     <div className='w-full h-auto rounded-2xl flex p-8 flex-col items-center space-y-18'>
       <Globe recorder={recorder} />
       <div className='h-2/4 w-full flex justify-center items-center'>
         {!generateTextMutation.isPending && <div className='flex flex-col justify-center items-center gap-8'>
           <div
-
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
+            onClick={() => {
+              !recorder ? startRecorder() : stopRecorder()
+            }}
             className='flex items-center gap-2 border rounded-full p-4 cursor-pointer bg-gray-100 hover:bg-gray-200 transition-colors duration-150 ease-in-out'>
             {!recorder && <motion.div
-
               variants={variantAudio}
               initial="initial"
               animate={isHover ? "hover" : "initial"}
-              exit="initial"> <CiMicrophoneOn size={20} color='indigo' onClick={() => {
-                startRecorder()
-              }} />
+              exit="initial"> <CiMicrophoneOn size={20} color='indigo' />
 
             </motion.div>}
-            {recorder && <GoDotFill size={20} color='red' className='animate-ping' onClick={() => {
-              stopRecorder()
-            }} />}
+            {recorder && <GoDotFill size={20} color='red' className='animate-ping' />}
             {/* {audio && <audio src={audio} controls></audio>} */}
           </div>
           <div className='flex w-full flex-row gap-8 justify-between text-sm'>

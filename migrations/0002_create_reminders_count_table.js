@@ -3,7 +3,6 @@ exports.up = function (knex) {
         table.increments('id');
         table.string('userId', 100).notNullable();
         table.date('date').notNullable();
-        table.integer('usageCount').defaultTo(1);
     });
 };
 
