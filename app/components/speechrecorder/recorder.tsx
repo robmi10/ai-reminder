@@ -41,6 +41,7 @@ export const useRecorder = () => {
     }
 
     const startRecorder = () => {
+        console.log("inside first startRecorder mediaRecorder ->", mediaRecorder)
         if (mediaRecorder) {
             console.log("inside startRecorder")
             mediaRecorder.start()
@@ -54,7 +55,7 @@ export const useRecorder = () => {
             mediaRecorder.stop()
             console.log("check recorder ->", recorder)
             setRecorder(false);
-            setMediaRecorder(false)
+            // setMediaRecorder(false)
         }
     }
 

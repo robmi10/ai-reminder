@@ -160,10 +160,16 @@ export const aiRouter = createTRPCRouter({
 
     isRemindersUsageAcceptable: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
         const userId = opts.input.user?.id
-        const reminderUsage = await db.selectFrom('reminder_usage').selectAll().where('userId', '=', userId).execute()
+        const dailyLimit = 2;
 
-        const usageLength = reminderUsage.length
-        console.log("check usageLength ->", usageLength)
+        const today = new Date();
+        const todayFormatted = today.toISOString().split('T')[0];
+
+        const reminderUsage = await db.selectFrom('reminder_usage').selectAll().where('userId', '=', userId).where('date', '=', todayFormatted).execute()
+
+        console.log("reminderUsage ->", reminderUsage)
+        const usageLengthToday = reminderUsage.length;
+        return usageLengthToday >= dailyLimit
     }),
     setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number(), status: z.boolean() }))).mutation(async (opts) => {
         await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({

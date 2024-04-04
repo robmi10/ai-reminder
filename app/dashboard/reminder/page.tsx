@@ -119,7 +119,7 @@ const Reminder = () => {
     if (useReminders.isLoading) return <Loading />
 
     return (
-        <div className='w-full min-h-96 flex pb-16 items-center justify-center flex-col gap-12'>
+        <div className='w-full min-h-96 flex pt-16 items-center pb-16 flex-col gap-12'>
             {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
                 <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
