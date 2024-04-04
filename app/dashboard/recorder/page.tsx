@@ -20,11 +20,11 @@ const Recorder = () => {
 
     return (
         <div className='p-4 pt-16 items-center flex flex-col'>
-            <div className='absolute top-0 p-8 left-8'>
+            <div className='absolute top-0 pt-4 mt:pt-8 md:p-8 left-8'>
                 <Buttonanimate href="/dashboard/reminder" front={true} />
                 <span className='text-xs'>Go to reminders</span>
             </div>
-            <span className='w-3/4 flex justify-center items-center text-xl font-medium'>
+            <span className='md:w-3/4 flex justify-center items-center text-xl font-medium'>
                 Capture Your Reminders in a Snap</span>
             <VoiceRecognition />
         </div>

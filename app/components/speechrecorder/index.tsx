@@ -44,7 +44,7 @@ const VoiceRecognition = () => {
   if (generateTextMutation.isPending) return <Loading />
 
   return (
-    <div className='w-full h-auto rounded-2xl flex p-8 flex-col items-center space-y-18'>
+    <div className='w-full md:h-auto rounded-2xl flex p-8 flex-col items-center md:space-y-18'>
       <Globe recorder={recorder} />
       <div className='h-2/4 w-full flex justify-center relative items-center'>
 

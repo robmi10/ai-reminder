@@ -123,11 +123,11 @@ const Reminder = () => {
             {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
                 <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
-            <div className='absolute top-0 p-8 left-8'>
+            <div className='absolute top-0 pt-4 md:pt-8 md:p-8 left-8'>
                 <Buttonanimate href="/dashboard/recorder" back={true} />
                 <span className='text-xs'>Go to recorder</span>
             </div>
-            <div className='place-items-center w-2/4 h-full grid grid-cols-2 gap-8 '>
+            <div className='place-items-center md:w-2/4 h-full grid md:grid-cols-2 gap-8'>
                 {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
