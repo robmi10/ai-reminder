@@ -20,10 +20,7 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
 
     const handleButtonClick = () => {
         if (href) {
-            console.log("href ->", href)
             router.push(href);
-        } else {
-            console.log("Button clicked without navigation path");
         }
     };
 
@@ -82,7 +79,6 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
                 </SignInButton>}
             <AnimatePresence>
                 {isHover && <motion.button
-                    onClick={() => { console.log("button animate pressed second") }}
                     whileHover="hover"
                     className={twMerge('absolute top-0 z-10 h-12 w-36 rounded-full flex justify-center items-center bg-gray-800',
                         (back || front) && 'h-12 w-12')}

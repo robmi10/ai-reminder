@@ -19,7 +19,6 @@ const VoiceRecognition = () => {
 
   const isRemindersUsageFull = api.ai.isRemindersUsageAcceptable.useQuery({ user: user }).data
 
-  console.log("isRemindersUsageFull ->", isRemindersUsageFull)
   const variantAudio = {
     hover: { scale: 1.2, opacity: 1, transition: { type: "springer", duration: 0.2, ease: "easeInOut" } },
     initial: { scale: 1, opacity: 1 },
@@ -64,6 +63,7 @@ const VoiceRecognition = () => {
             }}
             className={twMerge('flex items-center gap-2 border rounded-full p-4 bg-gray-100',
               !isRemindersUsageFull && 'hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer',
+              isRemindersUsageFull && 'opacity-75 cursor-no-drop'
             )}>
             {!recorder && isRemindersUsageFull && <motion.div
               variants={variantAudio}

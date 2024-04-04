@@ -18,7 +18,6 @@ const Recorder = () => {
         }
     }, [reminder, router])
 
-    console.log("transcription ->", transcription)
     return (
         <div className='p-4 pt-16 items-center flex flex-col'>
             <div className='absolute top-0 p-8 left-8'>

@@ -144,14 +144,6 @@ export const aiRouter = createTRPCRouter({
         }
         return { reminder, text }
     }),
-    // setReminderUsage: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
-    //     const userId = opts.input.user?.id
-    //     const usageDate = new Date();
-    //     await db.insertInto('reminder_usage').values({
-    //         userId: userId,
-    //         date: usageDate.toISOString(),
-    //     }).execute()
-    // }),
     getUserReminders: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
         const userId = opts.input.user?.id
         const reminders = await db.selectFrom('event').selectAll().where('userId', '=', userId).orderBy('start asc').execute()
@@ -166,8 +158,6 @@ export const aiRouter = createTRPCRouter({
         const todayFormatted = today.toISOString().split('T')[0];
 
         const reminderUsage = await db.selectFrom('reminder_usage').selectAll().where('userId', '=', userId).where('date', '=', todayFormatted).execute()
-
-        console.log("reminderUsage ->", reminderUsage)
         const usageLengthToday = reminderUsage.length;
         return usageLengthToday >= dailyLimit
     }),
