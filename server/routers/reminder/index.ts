@@ -3,39 +3,12 @@ import { z } from "zod";
 import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
 import { format } from "date-fns";
-import fs from "fs";
-import axios from 'axios'
-import path from "path";
+import Replicate from 'replicate';
 
 const client = new OpenAI({
     apiKey: process.env.TOGETHER_API_KEY,
     baseURL: 'https://api.together.xyz/v1',
 });
-
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
-
-async function downloadFile(fileUrl: any, outputPath: any) {
-    try {
-        const response = await axios({
-            method: 'GET',
-            url: fileUrl,
-            responseType: 'stream',
-        });
-
-        const writer = fs.createWriteStream(outputPath);
-        response.data.pipe(writer);
-
-        return new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', reject);
-        });
-    } catch (error) {
-        console.error('Error downloading the file: ', error);
-    }
-}
 
 export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
@@ -49,41 +22,30 @@ export const aiRouter = createTRPCRouter({
         console.log("inside input userId ->", userId)
         console.log("inside input email ->", email)
 
-        // const replicate = new Replicate({
-        //     auth: process.env.REPLICATE_API_TOKEN,
-        // });
-
-        // const output: any = await replicate.run(
-        //     "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
-        //     {
-        //         input: {
-        //             audio: opts.input.audio,
-        //             model: "large-v3",
-        //             translate: false,
-        //             temperature: 0,
-        //             transcription: "plain text",
-        //             suppress_tokens: "-1",
-        //             logprob_threshold: -1,
-        //             no_speech_threshold: 0.6,
-        //             condition_on_previous_text: true,
-        //             compression_ratio_threshold: 2.4,
-        //             temperature_increment_on_fallback: 0.2
-        //         }
-        //     }
-        // );
-
-        const fixedOutputPath = path.resolve(__dirname, 'downloadedAudio.wav');
-
-        await downloadFile(opts.input.audio, fixedOutputPath)
-
-        const translation = await openai.audio.translations.create({
-            file: fs.createReadStream(fixedOutputPath),
-            model: "whisper-1",
+        const replicate = new Replicate({
+            auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        console.log("check translation ->", translation)
+        const output: any = await replicate.run(
+            "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
+            {
+                input: {
+                    audio: opts.input.audio,
+                    model: "large-v3",
+                    translate: false,
+                    temperature: 0,
+                    transcription: "plain text",
+                    suppress_tokens: "-1",
+                    logprob_threshold: -1,
+                    no_speech_threshold: 0.6,
+                    condition_on_previous_text: true,
+                    compression_ratio_threshold: 2.4,
+                    temperature_increment_on_fallback: 0.2
+                }
+            }
+        );
 
-        const text = translation.text
+        const text = output.transcription
 
         const response = await client.chat.completions.create({
             messages: [
