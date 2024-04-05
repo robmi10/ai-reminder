@@ -20,9 +20,12 @@ import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
 import { useToast } from "@/components/ui/use-toast"
 import Loading from '@/app/components/loader/loading';
 import { useUser } from '@clerk/nextjs';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
+    const [value, setValue] = useState()
+
     const { toast } = useToast()
     const { user } = useUser();
 
@@ -126,6 +129,25 @@ const Reminder = () => {
             {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
                 <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
+            <Dialog open={!hasPhoneNumber}>
+                <DialogTrigger asChild className='w-full relative'>
+                    <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
+                </DialogTrigger>
+                <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
+                    <span className='text-xl'>Enable SMS Reminders</span>
+
+                    <div>
+                        <span className='text-sm'>Phone Number</span>
+
+                    </div>
+                    <PhoneInput
+                        disabled={false}
+                        placeholder="Enter phone number"
+                        value={"+46"}
+                        onChange={setValue}
+                    />
+                </DialogContent>
+            </Dialog>
             <div className='absolute top-0 pt-4 md:pt-8 md:p-8 left-8'>
                 <Buttonanimate href="/dashboard/recorder" back={true} />
                 <span className='text-xs'>Go to recorder</span>
@@ -176,7 +198,7 @@ const Reminder = () => {
                                         </DialogContent>
                                     </Dialog>
 
-                                    <Dialog>
+                                    <Dialog open={modal} onOpenChange={setModal}>
                                         <DialogTrigger asChild className='w-full relative'>
                                             <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
