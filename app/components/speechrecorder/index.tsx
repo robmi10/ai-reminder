@@ -65,7 +65,7 @@ const VoiceRecognition = () => {
               !isRemindersUsageFull && 'hover:bg-gray-200 transition-colors duration-150 ease-in-out cursor-pointer',
               isRemindersUsageFull && 'opacity-75 cursor-no-drop'
             )}>
-            {!recorder && isRemindersUsageFull && <motion.div
+            {!recorder && <motion.div
               variants={variantAudio}
               initial="initial"
               animate={isHover && !isRemindersUsageFull ? "hover" : "initial"}

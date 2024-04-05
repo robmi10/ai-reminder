@@ -53,18 +53,47 @@ const sendEmail = async (checkAllUpcomingReminders: any) => {
 }
 
 export const checkReminder = async () => {
-    const now = new Date();
-    const isUpcomingReminding = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
+    try {
 
-    const startOfMinute = isUpcomingReminding;
-    const endOfMinute = new Date(startOfMinute.getTime() + 60000);
-    const checkAllUpcomingReminders = await db.selectFrom('event').where('reminder', '>=', startOfMinute).where('reminder', '<', endOfMinute).selectAll().execute()
+        const now = new Date();
+        const isUpcomingReminding = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
 
-    await sendEmail(checkAllUpcomingReminders)
-    await sendSMS(checkAllUpcomingReminders)
+        const startOfMinute = isUpcomingReminding;
+        const endOfMinute = new Date(startOfMinute.getTime() + 60000);
+        const checkAllUpcomingReminders = await db.selectFrom('event').where('reminder', '>=', startOfMinute).where('reminder', '<', endOfMinute).selectAll().execute()
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: "Hello from Lambda TypeScript!" }),
-    };
+        await sendEmail(checkAllUpcomingReminders)
+        await sendSMS(checkAllUpcomingReminders)
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Reminders sent." }),
+        };
+
+    } catch (error) {
+        console.error(error)
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Failed to send reminders." }),
+        };
+    }
 };
+
+export const deleteReminders = async () => {
+    try {
+        const now = new Date();
+        await db.deleteFrom('event').where('start', '<', now).execute();
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Reminders deleted." }),
+        };
+    } catch (error) {
+        console.error(error)
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Failed to delete reminders." }),
+        };
+    }
+
+
+}

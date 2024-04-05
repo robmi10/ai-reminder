@@ -7,7 +7,7 @@ import Buttonanimate from '../../components/animation/buttonanimate'
 import { useRouter } from 'next/navigation'
 
 const Recorder = () => {
-    const { transcription, reminder, setReminder } = useReminderStore()
+    const { reminder, setReminder } = useReminderStore()
     const router = useRouter()
 
     useEffect(() => {
