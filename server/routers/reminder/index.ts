@@ -132,6 +132,12 @@ export const aiRouter = createTRPCRouter({
         console.log("eventId delete ->", opts.input.eventId)
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
     }),
+    insertPhoneNumber: protectedProcedure.input((z.object({ phone: z.string(), user: z.any() }))).mutation(async (opts) => {
+        const userId = opts.input.user?.id
+        await db.updateTable('event').where('userId', '=', userId).set(
+            { phone: opts.input.phone }
+        ).execute()
+    }),
     editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {
         const updatePayload = { desc: '', start: '', reminder: '' };
 

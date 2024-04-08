@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RxPencil1 } from "react-icons/rx";
 import { CiTrash } from "react-icons/ci";
 import { IoCheckmark } from "react-icons/io5";
@@ -20,14 +20,16 @@ import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
 import { useToast } from "@/components/ui/use-toast"
 import Loading from '@/app/components/loader/loading';
 import { useUser } from '@clerk/nextjs';
-import { PhoneInput } from '@/components/ui/phone-input';
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
-    const [value, setValue] = useState()
+    const [phoneModal, setPhoneModal] = useState(false)
+
 
     const { toast } = useToast()
-    const { user } = useUser();
+    const { user, isLoaded } = useUser();
 
     const [remindersObj, setRemindersObj] = useState({
         desc: '',
@@ -35,16 +37,25 @@ const Reminder = () => {
         start: '',
         eventId: 0
     })
+    const [phoneNumber, setPhoneNumber] = useState("");
+
     const useReminders = api.ai.getUserReminders.useQuery({ user: user })
     const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
         onSettled() {
             useReminders.refetch()
         }
     })
-    const hasPhoneNumber = user?.phoneNumbers[0]
+    const hasPhoneNumber = user?.unsafeMetadata.phoneNumbers
 
-    console.log("user ->", user)
-    console.log("hasPhoneNumber ->", hasPhoneNumber)
+    useEffect(() => {
+        const hasPhoneNumber = user?.unsafeMetadata?.phoneNumbers;
+        console.log("hasPhoneNumber check first now ->", hasPhoneNumber)
+        if (!hasPhoneNumber && isLoaded) {
+            console.log("hasPhoneNumber check second now ->", hasPhoneNumber)
+            setPhoneModal(true);
+        }
+    }, [user]);
+
     const iconVariants = {
         initial: { scale: 0, opacity: 0 },
         animate: { scale: 1, opacity: 1, transition: { type: "spring", duration: 0.5, ease: "easeInOut" } },
@@ -52,7 +63,21 @@ const Reminder = () => {
 
     const reminderEditMutation = api.ai.editReminder.useMutation({})
     const deleteReminderMutation = api.ai.deleteReminder.useMutation({})
+    const insertPhoneNumberMutation = api.ai.insertPhoneNumber.useMutation({
+        onSettled() {
+            setPhoneModal(false)
+        }
+    })
 
+    const setUserPhoneNumber = () => {
+        user?.update({
+            unsafeMetadata: {
+                phoneNumbers: phoneNumber
+            }
+        })
+
+        insertPhoneNumberMutation.mutate({ phone: phoneNumber, user: user })
+    }
 
     const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
         if (!eventId) return false
@@ -122,30 +147,29 @@ const Reminder = () => {
 
     const reminders = useReminders.data && useReminders?.data
     const hasReminders = reminders && reminders.length > 0
-    if (useReminders.isLoading) return <Loading />
+    if (useReminders.isLoading && !hasPhoneNumber) return <Loading />
 
     return (
         <div className='w-full min-h-96 flex pt-16 items-center pb-16 flex-col gap-12'>
             {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
                 <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
-            <Dialog open={!hasPhoneNumber}>
-                <DialogTrigger asChild className='w-full relative'>
-                    <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
-                </DialogTrigger>
-                <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
+            <Dialog open={phoneModal} onOpenChange={setPhoneModal}>
+                <DialogContent className='bg-white rounded-xl h-56 p-7 shadow-2xl w-3/12'>
                     <span className='text-xl'>Enable SMS Reminders</span>
-
                     <div>
                         <span className='text-sm'>Phone Number</span>
-
                     </div>
                     <PhoneInput
-                        disabled={false}
-                        placeholder="Enter phone number"
-                        value={"+46"}
-                        onChange={setValue}
+                        className='w-full'
+                        defaultCountry='se'
+                        value={phoneNumber}
+                        onChange={(phoneNumber) => setPhoneNumber(phoneNumber)}
                     />
+
+                    <div className='flex gap-4 justify-end'>
+                        <Button onClick={() => { setUserPhoneNumber() }} className='border w-1/4 just border-slate-100 shadow-2xl rounded-3xl text-sm h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
+                    </div>
                 </DialogContent>
             </Dialog>
             <div className='absolute top-0 pt-4 md:pt-8 md:p-8 left-8'>
@@ -198,7 +222,7 @@ const Reminder = () => {
                                         </DialogContent>
                                     </Dialog>
 
-                                    <Dialog open={modal} onOpenChange={setModal}>
+                                    <Dialog>
                                         <DialogTrigger asChild className='w-full relative'>
                                             <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
