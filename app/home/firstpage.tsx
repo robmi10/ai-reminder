@@ -1,7 +1,7 @@
 import React from 'react'
 import { IoIosArrowDown } from "react-icons/io";
-
 import Globe from '../components/animation/globe';
+import CustomLink from '../components/scroll';
 
 
 const Firstpage = () => {
@@ -16,11 +16,10 @@ const Firstpage = () => {
                 <span className="text-sm rounded-2xl z-10 flex justify-center items-center">
                     Your Personal Reminder Assistant
                 </span>
-                {/* <span className="text-sm rounded-2xl z-10 flex justify-center items-center">
-                    Powered by AI
-                </span> */}
             </div>
-            <IoIosArrowDown className="animate-bounce mt-12 text-stone-50 rounded-full border border-stone-50 p-3 shadow-2xl" size={50} />
+            <CustomLink href="#about">
+                <IoIosArrowDown className="animate-bounce mt-12 cursor-pointer text-stone-50 rounded-full border border-stone-50 p-3 shadow-2xl" size={50} />
+            </CustomLink>
         </div>
     )
 }

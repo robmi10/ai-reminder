@@ -6,9 +6,20 @@ import Firstpage from "./firstpage";
 import Secondpage from "./secondpage";
 import Thirdpage from "./thirdpage";
 import Footer from "../components/footer/footer";
+import { useEffect } from "react";
 
 const HomePage = () => {
     console.log("inside HomePage")
+
+    useEffect(() => {
+        (
+            async () => {
+                const LocomotiveScroll = (await import('locomotive-scroll')).default
+                const locomotiveScroll = new LocomotiveScroll();
+            }
+        )()
+    }, [])
+
     return (
         <>
             <div>
@@ -17,6 +28,7 @@ const HomePage = () => {
                         <Button className="w-auto shadow-lg rounded-full bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500"> Sign In</Button>
                     </SignInButton>
                 </div>
+
                 <Firstpage />
                 <Secondpage />
                 <Thirdpage />

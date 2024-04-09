@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { RxPencil1 } from "react-icons/rx";
 import { CiTrash } from "react-icons/ci";
-import { IoCheckmark } from "react-icons/io5";
 import Buttonanimate from '../../components/animation/buttonanimate';
 import {
     Dialog,
@@ -13,7 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
-import { IoCloseOutline } from "react-icons/io5";
 import { format } from "date-fns";
 import { motion } from 'framer-motion'
 import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
