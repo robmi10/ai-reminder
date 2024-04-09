@@ -40,16 +40,10 @@ const Reminder = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
 
     const useReminders = api.ai.getUserReminders.useQuery({ user: user })
-    const reminderStatusMutation = api.ai.setReminderStatus.useMutation({
-        onSettled() {
-            useReminders.refetch()
-        }
-    })
     const hasPhoneNumber = user?.unsafeMetadata.phoneNumbers
 
     useEffect(() => {
         const hasPhoneNumber = user?.unsafeMetadata?.phoneNumbers;
-        console.log("hasPhoneNumber check first now ->", hasPhoneNumber)
         if (!hasPhoneNumber && isLoaded) {
             console.log("hasPhoneNumber check second now ->", hasPhoneNumber)
             setPhoneModal(true);
@@ -77,21 +71,6 @@ const Reminder = () => {
         })
 
         insertPhoneNumberMutation.mutate({ phone: phoneNumber, user: user })
-    }
-
-    const handleSetReminderStatus = (eventId: number | undefined, status: boolean) => {
-        if (!eventId) return false
-        reminderStatusMutation.mutate({ eventId: eventId, status }, {
-            onSuccess() {
-                useReminders.refetch()
-                setModal(false)
-                toast({
-                    variant: "success",
-                    title: "Status Update",
-                    description: "Reminder status is updated.",
-                })
-            }
-        })
     }
 
     const handleDeleteReminder = (eventId: number | undefined) => {
@@ -250,19 +229,6 @@ const Reminder = () => {
                                 <span className='font-medium'>Reminder</span>
                                 <span>{reminderDate}</span>
                             </div>
-
-                            {!opts.status && <motion.div
-                                initial="initial"
-                                animate="animate"
-                                variants={iconVariants} className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
-                                    handleSetReminderStatus(opts.eventId, !opts.status)
-                                }}><IoCheckmark size={20} /></motion.div>}
-                            {opts.status && <motion.div
-                                initial="initial"
-                                animate="animate"
-                                variants={iconVariants} className='absolute right-2 bottom-8 justify-end flex cursor-pointer' onClick={() => {
-                                    handleSetReminderStatus(opts.eventId, !opts.status)
-                                }}><IoCloseOutline size={20} /></motion.div>}
                         </motion.div>
                     )
                 }

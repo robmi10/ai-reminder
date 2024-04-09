@@ -86,7 +86,6 @@ export const aiRouter = createTRPCRouter({
                         desc: opt.task,
                         start: startDateTime.toISOString(),
                         reminder: reminderTime.toISOString(),
-                        status: false,
                         email: email,
                         phone: "0707276369",
                     }).execute()
@@ -123,11 +122,6 @@ export const aiRouter = createTRPCRouter({
         const usageLengthToday = reminderUsage.length;
         return usageLengthToday >= dailyLimit
     }),
-    setReminderStatus: protectedProcedure.input((z.object({ eventId: z.number(), status: z.boolean() }))).mutation(async (opts) => {
-        await db.updateTable('event').where('eventId', '=', opts.input.eventId).set({
-            status: opts.input.status
-        }).execute()
-    }),
     deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
         console.log("eventId delete ->", opts.input.eventId)
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
@@ -157,8 +151,5 @@ export const aiRouter = createTRPCRouter({
             updatePayload
         ).execute()
     }),
-
-    // One function for checking how many reminders user already have its maximum 2 times for one day they can use it for one day.
-    // One function to check if the current reminders have passed and if so delete them.
 
 })

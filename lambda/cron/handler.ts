@@ -61,10 +61,8 @@ export const checkReminder = async () => {
         const startOfMinute = isUpcomingReminding;
         const endOfMinute = new Date(startOfMinute.getTime() + 60000);
         const checkAllUpcomingReminders = await db.selectFrom('event').where('reminder', '>=', startOfMinute).where('reminder', '<', endOfMinute).selectAll().execute()
-
         await sendEmail(checkAllUpcomingReminders)
         await sendSMS(checkAllUpcomingReminders)
-
         return {
             statusCode: 200,
             body: JSON.stringify({ message: "Reminders sent." }),

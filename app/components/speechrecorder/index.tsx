@@ -17,10 +17,6 @@ const VoiceRecognition = () => {
   const { user } = useUser();
   const generateTextMutation = api.ai.generateText.useMutation({})
   const isRemindersUsageFull = api.ai.isRemindersUsageAcceptable.useQuery({ user: user }).data
-  const hasPhoneNumber = user?.phoneNumbers[0]
-
-  console.log("user ->", user)
-  console.log("hasPhoneNumber ->", hasPhoneNumber)
 
   const variantAudio = {
     hover: { scale: 1.2, opacity: 1, transition: { type: "springer", duration: 0.2, ease: "easeInOut" } },
