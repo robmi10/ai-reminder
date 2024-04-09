@@ -23,6 +23,7 @@ import 'react-international-phone/style.css';
 
 const Reminder = () => {
     const [modal, setModal] = useState(false);
+    const [modalDelete, setModalDelete] = useState(false);
     const [phoneModal, setPhoneModal] = useState(false)
 
 
@@ -73,14 +74,16 @@ const Reminder = () => {
 
     const handleDeleteReminder = (eventId: number | undefined) => {
         if (!eventId) return false
+
+        console.log("inside delete eventId ->", eventId)
         deleteReminderMutation.mutate({ eventId: eventId }, {
             onSuccess() {
                 useReminders.refetch()
-                setModal(false)
+                setModalDelete(false)
                 toast({
                     variant: "success",
-                    title: "Remove task",
-                    description: "Task is deleted.",
+                    title: "Task Deleted",
+                    description: "The task has been successfully removed..",
                 })
             }
         })
@@ -98,19 +101,16 @@ const Reminder = () => {
 
                     toast({
                         variant: "success",
-                        title: "Edit task",
-                        description: "Task is edited.",
+                        title: "Task Updated",
+                        description: "Your task has been successfully updated.",
                     })
                 }
             })
         } else if (reminderTime > startTime || reminderTime === startTime) {
-            console.error("Reminder is later than start time or the same.");
-
-
             toast({
                 variant: "destructive",
-                title: "Edit task error",
-                description: "Reminder is later than start time or the same.",
+                title: "Invalid Reminder Time",
+                description: "The reminder time must be before the task's start time. Please adjust the reminder time.",
             })
         }
     }
@@ -128,8 +128,8 @@ const Reminder = () => {
 
     return (
         <div className='w-full min-h-96 flex pt-16 items-center pb-16 flex-col gap-12'>
-            {hasReminders ? <div className='text-xl font-medium w-full flex items-center justify-center'>Reminders</div> :
-                <div className='text-xl font-medium w-full flex items-center justify-center'>You have no reminders at the moment.</div>
+            {hasReminders ? <div className='text-xl w-full flex items-center justify-center'>Reminders</div> :
+                <div className='text-xl w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
             <Dialog open={phoneModal} onOpenChange={setPhoneModal}>
                 <DialogContent className='bg-white rounded-xl h-56 p-7 shadow-2xl w-3/12'>
@@ -157,6 +157,8 @@ const Reminder = () => {
                 {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
+                    const id = opts.eventId
+
                     return (
                         <motion.div initial="initial"
                             animate="animate" variants={iconVariants} key={index} className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
@@ -177,7 +179,6 @@ const Reminder = () => {
                                         </DialogTrigger>
                                         <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Edit Reminder</span>
-
                                             <div>
                                                 <span className='text-sm'>Description</span>
                                                 <Input value={remindersObj.desc} onChange={(e) => { setRemindersObj(current => ({ ...current, desc: e.target.value })) }} type='text' placeholder="Desc" className='rounded-3xl border-stone-200 shadow-3xl placeholder:text-stone-400' />
@@ -199,8 +200,15 @@ const Reminder = () => {
                                         </DialogContent>
                                     </Dialog>
 
-                                    <Dialog>
-                                        <DialogTrigger asChild className='w-full relative'>
+                                    <Dialog open={modalDelete} onOpenChange={setModalDelete}>
+                                        <DialogTrigger asChild onClick={() => {
+                                            setRemindersObj({
+                                                desc: opts.desc,
+                                                start: extractTime(opts.start),
+                                                reminder: extractTime(opts.reminder),
+                                                eventId: opts.eventId
+                                            });
+                                        }} className='w-full relative'>
                                             <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
                                         <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
@@ -209,14 +217,15 @@ const Reminder = () => {
                                                 This action cannot be undone. This will permanently delete your reminder.
                                             </DialogDescription>
                                             <div className='flex gap-4'>
-                                                <Button onClick={() => { handleDeleteReminder(opts.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
-                                                <Button className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>NO</Button>
+
+                                                <Button onClick={() => { handleDeleteReminder(remindersObj.eventId) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>YES</Button>
+                                                <Button onClick={() => { setModalDelete(false) }} className='border border-slate-100 shadow-2xl rounded-3xl h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>NO</Button>
                                             </div>
                                         </DialogContent>
                                     </Dialog>
                                 </div></div>
                             <div className='flex flex-col'>
-                                <span className='font-medium'>Desc</span>
+                                <span className='font-medium'>Task</span>
                                 <span>{opts.desc}</span>
                             </div>
                             <div className='flex flex-col'>

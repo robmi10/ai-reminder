@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button'
 import { SignOutButton } from '@clerk/nextjs'
 import React, { ReactNode } from 'react'
-import Recorder from './recorder/page'
 import { useRouter } from 'next/navigation'
 import Footer from '../components/footer/footer'
 import { Toaster } from '@/components/ui/toaster'

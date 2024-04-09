@@ -6,12 +6,12 @@ const cardContent = [
     { title: "Save time and mental energy. Focus on what truly matters, while AI Reminder takes care of the rest.", px: "-600px" }
 ]
 
-const Description = ({ children }: any) => {
+const Description = ({ title }: any) => {
 
     return (
         <div
-            className="w-full h-[30vh] sticky top-40 left-0 p-8 rounded-2xl shadow-lg font-medium items-center flex bg-white">
-            {children}
+            className="w-full h-[30vh] sticky top-20 left-0 p-8 rounded-2xl shadow-lg items-center flex bg-white">
+            {title}
         </div>
     )
 }
@@ -19,12 +19,15 @@ const Secondpage = () => {
     return (
         <div id="about" className="h-[160vh] w-screen bg-stone-50 flex items-center justify-center flex-col ">
             <div className="flex flex-col md:flex-row space-x-18">
-                <span className="text-2xl sticky top-20 left-0 w-full h-[50vh] items-center font-medium items-top justify-center flex">Why AI Reminder?</span>
+                <span className="text-2xl sticky top-20 left-0 w-full h-[30vh] items-center font-medium items-top justify-center flex">Why AI Reminder?</span>
                 <div className="flex gap-16 flex-col">
-                    {cardContent.map((card, i) => {
+                    {cardContent.map((content, index) => {
                         return (
-                            <Description key={i}>{card.title}</Description>
-                        )
+                            <Description
+                                key={index}
+                                title={content.title}
+                                index={index}
+                            />)
                     })}
                 </div>
             </div >
