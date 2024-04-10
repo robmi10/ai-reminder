@@ -17,6 +17,7 @@ export const aiRouter = createTRPCRouter({
         console.log("inside generateText now here", opts.input.audio)
 
         const userId = opts.input.user?.id
+        const phoneNumber = opts.input.user?.phoneNumbers[0].phoneNumber ?? null
         const email = opts.input.user?.emailAddresses[0].emailAddress
 
         console.log("inside input userId ->", userId)
@@ -92,7 +93,7 @@ export const aiRouter = createTRPCRouter({
                             start: startDateTime.toISOString(),
                             reminder: reminderTime.toISOString(),
                             email: email,
-                            phone: "0707276369",
+                            phone: phoneNumber,
                         }).execute()
 
                     }));
@@ -112,7 +113,7 @@ export const aiRouter = createTRPCRouter({
                         start: startDateTime.toISOString(),
                         reminder: reminderTime.toISOString(),
                         email: email,
-                        phone: "0707276369",
+                        phone: phoneNumber,
                     }).execute()
                 }
 

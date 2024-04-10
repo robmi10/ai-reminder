@@ -6,15 +6,11 @@ import { format } from 'date-fns';
 const sendSMS = async (checkAllUpcomingReminders: any) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
-
     const client = require('twilio')(accountSid, authToken);
-
-    console.log("inside sendSMS 2", client)
 
     const smsPromise = checkAllUpcomingReminders.map(reminder => {
         const date = new Date(reminder.start.toString());
 
-        console.log("inside sendSMS 3", reminder.phone)
         return client.messages
             .create({
                 body: `Reminder: '${reminder.desc}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: http://localhost:3000/`,
@@ -25,7 +21,6 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
     });
     try {
         const results = await Promise.all(smsPromise);
-        console.log("results sms ->", results)
         return new Response(JSON.stringify({ success: true, results }), { status: 200 });
     } catch (error) {
         return new Response(JSON.stringify({ error: error }), { status: 500 });
@@ -45,7 +40,6 @@ const sendEmail = async (checkAllUpcomingReminders: any) => {
     });
     try {
         const results = await Promise.all(emailPromises);
-        console.log("results email ->", results)
         return new Response(JSON.stringify({ success: true, results }), { status: 200 });
     } catch (error) {
         return new Response(JSON.stringify({ error: error }), { status: 500 });
@@ -54,15 +48,19 @@ const sendEmail = async (checkAllUpcomingReminders: any) => {
 
 export const checkReminder = async () => {
     try {
+        const now = new Date().toISOString();
+        const checkAllUpcomingReminders = await db.selectFrom('event').where('start', '>=', now).where('reminder', '<=', now).where('status', '=', false).selectAll().execute()
 
-        const now = new Date();
-        const isUpcomingReminding = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
+        await Promise.all(checkAllUpcomingReminders.map(async () => {
+            await db.updateTable('event').set({ 'status': true }
+            ).execute()
+        }))
 
-        const startOfMinute = isUpcomingReminding;
-        const endOfMinute = new Date(startOfMinute.getTime() + 60000);
-        const checkAllUpcomingReminders = await db.selectFrom('event').where('reminder', '>=', startOfMinute).where('reminder', '<', endOfMinute).selectAll().execute()
-        await sendEmail(checkAllUpcomingReminders)
-        await sendSMS(checkAllUpcomingReminders)
+        const hasReminders = checkAllUpcomingReminders?.length > 0
+        if (hasReminders) {
+            await sendEmail(checkAllUpcomingReminders)
+            await sendSMS(checkAllUpcomingReminders)
+        }
         return {
             statusCode: 200,
             body: JSON.stringify({ message: "Reminders sent." }),
@@ -80,7 +78,7 @@ export const checkReminder = async () => {
 export const deleteReminders = async () => {
     try {
         const now = new Date();
-        await db.deleteFrom('event').where('start', '<', now).execute();
+        await db.deleteFrom('event').where('status', '==', true).execute();
         return {
             statusCode: 200,
             body: JSON.stringify({ message: "Reminders deleted." }),

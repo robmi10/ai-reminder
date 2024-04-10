@@ -37,14 +37,12 @@ const Reminder = () => {
         eventId: 0
     })
     const [phoneNumber, setPhoneNumber] = useState("");
-
     const useReminders = api.ai.getUserReminders.useQuery({ user: user })
     const hasPhoneNumber = user?.unsafeMetadata.phoneNumbers
 
     useEffect(() => {
-        const hasPhoneNumber = user?.unsafeMetadata?.phoneNumbers;
+        const hasPhoneNumber = user && user?.phoneNumbers.length > 0;
         if (!hasPhoneNumber && isLoaded) {
-            console.log("hasPhoneNumber check second now ->", hasPhoneNumber)
             setPhoneModal(true);
         }
     }, [user]);
@@ -63,19 +61,12 @@ const Reminder = () => {
     })
 
     const setUserPhoneNumber = () => {
-        user?.update({
-            unsafeMetadata: {
-                phoneNumbers: phoneNumber
-            }
-        })
-
+        user?.createPhoneNumber({ phoneNumber })
         insertPhoneNumberMutation.mutate({ phone: phoneNumber, user: user })
     }
 
     const handleDeleteReminder = (eventId: number | undefined) => {
         if (!eventId) return false
-
-        console.log("inside delete eventId ->", eventId)
         deleteReminderMutation.mutate({ eventId: eventId }, {
             onSuccess() {
                 useReminders.refetch()

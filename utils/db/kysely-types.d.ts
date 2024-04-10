@@ -6,6 +6,7 @@ export interface Event {
     phone?: string;
     reminder: string;
     start: string;
+    status?: boolean;
     createdAt: end;
 }
 
