@@ -51,11 +51,12 @@ export const checkReminder = async () => {
         const now = new Date().toISOString();
         const checkAllUpcomingReminders = await db.selectFrom('event').where('start', '>=', now).where('reminder', '<=', now).where('status', '=', false).selectAll().execute()
 
-        await Promise.all(checkAllUpcomingReminders.map(async () => {
-            await db.updateTable('event').set({ 'status': true }
+        await Promise.all(checkAllUpcomingReminders.map(async (opts: any) => {
+            await db.updateTable('event').where('eventId', '=', opts.eventId).set({ 'status': true }
             ).execute()
         }))
 
+        console.log("inside checkReminder !", checkAllUpcomingReminders)
         const hasReminders = checkAllUpcomingReminders?.length > 0
         if (hasReminders) {
             await sendEmail(checkAllUpcomingReminders)

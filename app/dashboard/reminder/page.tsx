@@ -38,10 +38,13 @@ const Reminder = () => {
     })
     const [phoneNumber, setPhoneNumber] = useState("");
     const useReminders = api.ai.getUserReminders.useQuery({ user: user })
-    const hasPhoneNumber = user?.unsafeMetadata.phoneNumbers
+    const hasPhoneNumber = user && user?.phoneNumbers.length > 0;
 
+    console.log("user?.phoneNumbers.length ->", user?.phoneNumbers)
     useEffect(() => {
-        const hasPhoneNumber = user && user?.phoneNumbers.length > 0;
+        console.log("hasPhoneNumber ->", hasPhoneNumber)
+        console.log("isLoaded ->", isLoaded)
+
         if (!hasPhoneNumber && isLoaded) {
             setPhoneModal(true);
         }
@@ -57,6 +60,7 @@ const Reminder = () => {
     const insertPhoneNumberMutation = api.ai.insertPhoneNumber.useMutation({
         onSettled() {
             setPhoneModal(false)
+            user?.reload()
         }
     })
 
@@ -67,6 +71,7 @@ const Reminder = () => {
 
     const handleDeleteReminder = (eventId: number | undefined) => {
         if (!eventId) return false
+
         deleteReminderMutation.mutate({ eventId: eventId }, {
             onSuccess() {
                 useReminders.refetch()
@@ -123,13 +128,15 @@ const Reminder = () => {
                 <div className='text-xl w-full flex items-center justify-center'>You have no reminders at the moment.</div>
             }
             <Dialog open={phoneModal} onOpenChange={setPhoneModal}>
-                <DialogContent className='bg-white rounded-xl h-56 p-7 shadow-2xl w-3/12'>
+                <DialogContent className='bg-white rounded-xl h-56 p-7 shadow-2xl w-3/4'>
                     <span className='text-xl'>Enable SMS Reminders</span>
                     <div>
                         <span className='text-sm'>Phone Number</span>
                     </div>
                     <PhoneInput
-                        className='w-full'
+                        inputStyle={{
+                            width: '100%',
+                        }}
                         defaultCountry='se'
                         value={phoneNumber}
                         onChange={(phoneNumber) => setPhoneNumber(phoneNumber)}
@@ -144,7 +151,7 @@ const Reminder = () => {
                 <Buttonanimate href="/dashboard/recorder" back={true} />
                 <span className='text-xs'>Go to recorder</span>
             </div>
-            <div className='place-items-center md:w-2/4 h-full grid md:grid-cols-2 gap-8'>
+            <div className='place-items-center md:w-2/4 h-full grid md:grid-cols-2 w-3/4 gap-8'>
                 {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
@@ -152,7 +159,7 @@ const Reminder = () => {
 
                     return (
                         <motion.div initial="initial"
-                            animate="animate" variants={iconVariants} key={index} className='w-full bg-white h-54 p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
+                            animate="animate" variants={iconVariants} key={index} className='w-full h-60 overflow-auto p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
                             <div className='absolute right-2 justify-end flex'>
                                 <div className='flex gap-2'>
                                     <Dialog open={modal} onOpenChange={setModal} >
@@ -168,7 +175,7 @@ const Reminder = () => {
                                             asChild className='w-full relative'>
                                             <RxPencil1 className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
-                                        <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
+                                        <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Edit Reminder</span>
                                             <div>
                                                 <span className='text-sm'>Description</span>
@@ -202,7 +209,7 @@ const Reminder = () => {
                                         }} className='w-full relative'>
                                             <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
-                                        <DialogContent className='bg-white rounded-xl p-8 shadow-2xl'>
+                                        <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Delete Reminder?</span>
                                             <DialogDescription>
                                                 This action cannot be undone. This will permanently delete your reminder.

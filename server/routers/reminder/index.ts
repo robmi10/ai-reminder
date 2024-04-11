@@ -16,12 +16,19 @@ export const aiRouter = createTRPCRouter({
     ).mutation(async (opts) => {
         console.log("inside generateText now here", opts.input.audio)
 
+
+        console.log("inside generateText opts.input.user?.phoneNumbers ->", opts.input.user?.phoneNumbers)
+
+
         const userId = opts.input.user?.id
-        const phoneNumber = opts.input.user?.phoneNumbers[0].phoneNumber ?? null
+        const phoneNumber = opts.input.user?.phoneNumbers.length > 0 ? opts.input.user?.phoneNumbers[0].phoneNumber : false
         const email = opts.input.user?.emailAddresses[0].emailAddress
 
+        console.log("")
         console.log("inside input userId ->", userId)
         console.log("inside input email ->", email)
+        console.log("inside input phoneNumber ->", phoneNumber)
+        console.log("")
 
         const replicate = new Replicate({
             auth: process.env.REPLICATE_API_TOKEN,
@@ -48,17 +55,16 @@ export const aiRouter = createTRPCRouter({
 
         const text = output.transcription
         console.log("text ->", text)
-        // \n\nFor tasks without a specified 'time', you can omit the 'time' and 'reminder' fields. The AI should apply the default reminder time only to tasks with a specified 'time'.
         const response = await client.chat.completions.create({
             messages: [
                 {
                     role: 'system',
                     content: `Convert the spoken text into structured task reminders as JSON objects.
-                    Each task should include 'task' (a brief description), 'date' (YYYY-MM-DD), 'time' (HH:MM in 24-hour format), and 'reminder' (minutes before the task).
-                    If a task mentions a relative time (like "in 2 hours"), calculate the date and time accordingly using the current time as the reference point. Today's date is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false })}.
+                    Each task should include 'task' (a brief description), 'date' (YYYY-MM-DD), 'time' (HH:MM in 24-hour format), and 'reminder' (HH:MM in 24-hour format).
+                    If a task mentions a relative time (like "in 2 hours" or like "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false })}.
                     If a task does not specify a date, use the most recently mentioned date in the text. If no date is mentioned, use today's date (${new Date().toISOString().split('T')[0]}).
                     If a task does not specify a reminder time, use the most recently mentioned reminder time in the text. If no reminder time is mentioned at all, set the reminders to 10 minutes before the task's start time.
-                    Ensure the output is formatted as follows:\n\n{ 'task': 'Task description', 'date': 'YYYY-MM-DD', 'time': 'HH:MM', 'reminder': 'HH:MM'}`
+                    Ensure the output is formatted as follows:\n\n[{ 'task': 'Task description', 'date': 'YYYY-MM-DD', 'time': 'HH:MM', 'reminder': 'HH:MM'}] and that there is no text inside the ouput`
                 },
                 {
                     role: 'user',
@@ -68,39 +74,19 @@ export const aiRouter = createTRPCRouter({
         })
 
         const reminder = response.choices[0].message.content
+        console.log("current time ->", new Date().toLocaleTimeString('en-US', { hour12: false }))
         console.log("reminder ->", reminder)
-        const reminderList = reminder && (reminder.length > 0 ? JSON.parse(reminder) : reminder)
+        const reminderList = reminder && JSON.parse(reminder)
 
         console.log("reminderList ->", reminderList)
         console.log("reminderList.length ->", reminderList.length)
-        if (reminderList) {
+        if (reminderList.length > 0) {
             try {
                 const usageDate = new Date();
-                if (reminderList.length > 0) {
-                    await Promise.all(reminderList.map(async (opt: any) => {
-                        console.log("opt in array ->", opt)
-                        const startDateTimeISO = `${opt.date}T${opt.time}:00`;
-                        const reminderTimeISO = `${opt.date}T${opt.reminder}:00`;
-                        const startDateTime = new Date(startDateTimeISO);
-                        const reminderTime = new Date(reminderTimeISO);
-
-                        console.log("startDateTimeISO ->", startDateTimeISO)
-                        console.log("startDateTime ->", startDateTime)
-                        console.log("reminderTime ->", reminderTime)
-                        await db.insertInto('event').values({
-                            userId: userId,
-                            desc: opt.task,
-                            start: startDateTime.toISOString(),
-                            reminder: reminderTime.toISOString(),
-                            email: email,
-                            phone: phoneNumber,
-                        }).execute()
-
-                    }));
-                } else {
-                    console.log("reminderList in array ->", reminderList)
-                    const startDateTimeISO = `${reminderList.date}T${reminderList.time}:00`;
-                    const reminderTimeISO = `${reminderList.date}T${reminderList.reminder}:00`;
+                await Promise.all(reminderList.map(async (opt: any) => {
+                    console.log("opt in array ->", opt)
+                    const startDateTimeISO = `${opt.date}T${opt.time}:00`;
+                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00`;
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
@@ -109,14 +95,15 @@ export const aiRouter = createTRPCRouter({
                     console.log("reminderTime ->", reminderTime)
                     await db.insertInto('event').values({
                         userId: userId,
-                        desc: reminderList.task,
+                        desc: opt.task,
                         start: startDateTime.toISOString(),
                         reminder: reminderTime.toISOString(),
+                        status: false,
                         email: email,
                         phone: phoneNumber,
                     }).execute()
-                }
 
+                }));
                 await db.insertInto('reminder_usage').values({
                     userId: userId,
                     date: usageDate.toISOString(),
@@ -132,7 +119,7 @@ export const aiRouter = createTRPCRouter({
     }),
     getUserReminders: protectedProcedure.input((z.object({ user: z.any() }))).query(async (opts) => {
         const userId = opts.input.user?.id
-        const reminders = await db.selectFrom('event').selectAll().where('userId', '=', userId).orderBy('start asc').execute()
+        const reminders = await db.selectFrom('event').selectAll().where('userId', '=', userId).where('status', '=', false).orderBy('start asc').execute()
         return reminders
     }),
 
