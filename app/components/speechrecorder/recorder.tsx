@@ -21,7 +21,6 @@ export const useRecorder = () => {
             upsert: false,
 
         })
-        console.log("data check now here ->", data)
 
         if (error) {
             console.error(error)
@@ -34,16 +33,12 @@ export const useRecorder = () => {
     }
 
     const handleGenerateText = async (blob: any) => {
-        console.log("check now blob ->", blob)
         const audioUrl = await handleUploadAudio(blob) ?? ''
         setAudio(audioUrl)
-        console.log("audioUrl check ->", audioUrl)
     }
 
     const startRecorder = () => {
-        console.log("inside first startRecorder mediaRecorder ->", mediaRecorder)
         if (mediaRecorder) {
-            console.log("inside startRecorder")
             mediaRecorder.start()
             setRecorder(true);
         }
@@ -51,11 +46,8 @@ export const useRecorder = () => {
 
     const stopRecorder = () => {
         if (mediaRecorder) {
-            console.log("stop recorder now")
             mediaRecorder.stop()
-            console.log("check recorder ->", recorder)
             setRecorder(false);
-            // setMediaRecorder(false)
         }
     }
 

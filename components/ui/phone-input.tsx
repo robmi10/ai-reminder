@@ -150,10 +150,6 @@ const CountrySelect = ({
 
 const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
     const Flag = flags[country];
-    console.log("flags check ->", countryName)
-
-    console.log("country check ->", country)
-
     return (
         <span className="flex h-4 w-6 overflow-hidden rounded-xl bg-foreground/20">
             {Flag && <Flag title={countryName} />}

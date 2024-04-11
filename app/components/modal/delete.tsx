@@ -10,7 +10,6 @@ import {
 
 
 const ModalDelete = () => {
-    console.log("inside ModalDelete now")
     return (
         <>
             <Dialog>

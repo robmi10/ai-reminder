@@ -40,11 +40,7 @@ const Reminder = () => {
     const useReminders = api.ai.getUserReminders.useQuery({ user: user })
     const hasPhoneNumber = user && user?.phoneNumbers.length > 0;
 
-    console.log("user?.phoneNumbers.length ->", user?.phoneNumbers)
     useEffect(() => {
-        console.log("hasPhoneNumber ->", hasPhoneNumber)
-        console.log("isLoaded ->", isLoaded)
-
         if (!hasPhoneNumber && isLoaded) {
             setPhoneModal(true);
         }

@@ -9,8 +9,6 @@ import Footer from "../components/footer/footer";
 import { useEffect } from "react";
 
 const HomePage = () => {
-    console.log("inside HomePage")
-
     useEffect(() => {
         (
             async () => {
