@@ -48,7 +48,7 @@ const VoiceRecognition = () => {
       <div className='h-2/4 w-full flex justify-center relative items-center'>
 
         {isRemindersUsageFull && isHover && <motion.div variants={variantToolTip} animate="animate" initial="initial" className='absolute bottom-24 rounded-2xl  p-2 text-sm w-18'>
-          Thank you for using Ai Reminder! You've created two reminders today, which is your daily limit.
+          Thank you for using Ai Reminder! You&apos;ve created two reminders today, which is your daily limit.
         </motion.div>}
 
 
