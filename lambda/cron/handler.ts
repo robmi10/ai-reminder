@@ -2,13 +2,19 @@ import EmailTemplate from '@/app/components/email';
 import { db } from '@/utils/db/db';
 import { Resend } from 'resend';
 import { format } from 'date-fns';
-
+interface Reminder {
+    start: Date;
+    desc: string;
+    message: string;
+    phone: string;
+    email: string;
+}
 const sendSMS = async (checkAllUpcomingReminders: any) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = require('twilio')(accountSid, authToken);
 
-    const smsPromise = checkAllUpcomingReminders.map(reminder => {
+    const smsPromise = checkAllUpcomingReminders.map((reminder: Reminder) => {
         const date = new Date(reminder.start.toString());
 
         return client.messages
@@ -29,7 +35,7 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 
 const sendEmail = async (checkAllUpcomingReminders: any) => {
     const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
-    const emailPromises = checkAllUpcomingReminders.map(reminder => {
+    const emailPromises = checkAllUpcomingReminders.map((reminder: Reminder) => {
         const date = new Date(reminder.start.toString());
         return resend.emails.send({
             from: 'AI Task Reminder <onboarding@resend.dev>',
