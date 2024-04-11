@@ -6,7 +6,7 @@ const CustomLink = ({ href, children }: any) => {
         smoothscroll.polyfill();
     }, []);
 
-    const handleClick = (e) => {
+    const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
         const targetElement = document.querySelector(href);
         if (targetElement) {

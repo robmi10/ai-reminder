@@ -21,6 +21,13 @@ import { useUser } from '@clerk/nextjs';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
 
+interface Reminder {
+    desc: string;
+    reminder: string;
+    start: string;
+    eventId: number | undefined;
+}
+
 const Reminder = () => {
     const [modal, setModal] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);
@@ -30,7 +37,7 @@ const Reminder = () => {
     const { toast } = useToast()
     const { user, isLoaded } = useUser();
 
-    const [remindersObj, setRemindersObj] = useState({
+    const [remindersObj, setRemindersObj] = useState<Reminder>({
         desc: '',
         reminder: '',
         start: '',
@@ -152,7 +159,6 @@ const Reminder = () => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
                     const id = opts.eventId
-
                     return (
                         <motion.div initial="initial"
                             animate="animate" variants={iconVariants} key={index} className='w-full h-60 overflow-auto p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>

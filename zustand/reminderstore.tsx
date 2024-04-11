@@ -2,11 +2,11 @@ import { create } from 'zustand'
 
 type ReminderStoreState = {
     audio: any;
-    setAudio: (newAudioState: string) => void;
+    setAudio: (newAudioState: string | boolean) => void;
     transcription: any;
     setTranscription: (newTranscriptionState: string) => void;
     reminder: any;
-    setReminder: (newReminderState: string) => void;
+    setReminder: (newReminderState: string | boolean) => void;
 };
 
 export const useReminderStore = create<ReminderStoreState>((set) => ({

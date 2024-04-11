@@ -144,7 +144,7 @@ export const aiRouter = createTRPCRouter({
             { phone: opts.input.phone }
         ).execute()
     }),
-    editReminder: protectedProcedure.input((z.object({ eventId: z.number(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {
+    editReminder: protectedProcedure.input((z.object({ eventId: z.number().optional(), desc: z.string().optional(), timeStart: z.string(), timeReminder: z.string() }))).mutation(async (opts) => {
         const updatePayload = { desc: '', start: '', reminder: '' };
 
         const mergeDateTime = (currentDateTime: string, newTime: string) => {
