@@ -3,14 +3,6 @@ import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 export const useRecorder = () => {
-    // console.log("Supabase URL:", process.env.SECRET_SUPABASE_URL);
-    // console.log("Supabase Key:", process.env.SECRET_SUPABASE_KEY);
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY ?? ''
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
 
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
     const [recorder, setRecorder] = useState<any>(false)
