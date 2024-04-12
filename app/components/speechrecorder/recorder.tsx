@@ -2,37 +2,49 @@ import { useReminderStore } from '@/zustand/reminderstore';
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.SUPABASE_URL ?? ''
-const supabaseAnonKey = process.env.SUPABASE_KEY ?? ''
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
 export const useRecorder = () => {
+    // console.log("Supabase URL:", process.env.SECRET_SUPABASE_URL);
+    // console.log("Supabase Key:", process.env.SECRET_SUPABASE_KEY);
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY ?? ''
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
     const [recorder, setRecorder] = useState<any>(false)
     const chunks = useRef([]);
     const { setAudio } = useReminderStore()
 
     const handleUploadAudio = async (audioBlob: any) => {
-        const filePath = `uploads/${Date.now()}-audiofile.wav`;
-        const { data, error } = await supabase.storage.from('reminders').upload(filePath, audioBlob, {
-            cacheControl: '3600',
-            upsert: false,
+        try {
+            const formData = new FormData();
+            formData.append('audioBlob', audioBlob);
 
-        })
+            const response = await fetch('/api/storage', {
+                method: 'POST',
+                body: formData,
+            });
 
-        if (error) {
-            console.error(error)
-            return null
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("data recorder check ->", data)
+                return data.url;
+            } else {
+                throw new Error(data.error || "Failed to upload audio.");
+            }
+        } catch (error) {
+            console.error('Error uploading audio:', error);
+            return null;
         }
 
-        const res = supabase.storage.from('reminders').getPublicUrl(filePath);
-        const fileUrl = res.data.publicUrl
-        return fileUrl;
     }
 
     const handleGenerateText = async (blob: any) => {
         const audioUrl = await handleUploadAudio(blob) ?? ''
+        console.log("audioUrl current ->", audioUrl)
         setAudio(audioUrl)
     }
 

@@ -1,9 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
-import { getAuth, SignedInAuthObject, SignedOutAuthObject } from '@clerk/nextjs/server';
+import { getAuth } from '@clerk/nextjs/server';
 
-// interface AuthContext {
-//     auth: SignedInAuthObject | SignedOutAuthObject;
-// }
 
 export async function createInnerContext(req: any) {
     return await { auth: getAuth(req) };
