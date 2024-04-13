@@ -18,7 +18,7 @@ const Firstpage = () => {
                 </span>
             </div>
             <CustomLink href="#about">
-                <IoIosArrowDown className="animate-bounce mt-12 cursor-pointer text-stone-50 rounded-full border border-stone-50 p-3 shadow-2xl" size={50} />
+                <IoIosArrowDown className="animate-bounce md:mt-12 cursor-pointer text-stone-50 rounded-full border border-stone-50 p-3 shadow-2xl" size={50} />
             </CustomLink>
         </div>
     )
