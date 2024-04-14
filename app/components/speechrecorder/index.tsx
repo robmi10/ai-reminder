@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge';
 
 const VoiceRecognition = () => {
   const { recorder, stopRecorder, startRecorder } = useRecorder()
-  const { audio, setTranscription, setReminder, setAudio } = useReminderStore()
+  const { audio, setTranscription, setReminder, setAudio, generateText, setGenerateText } = useReminderStore()
   const [isHover, setIsHover] = useState(false)
   const { user } = useUser();
   const generateTextMutation = api.ai.generateText.useMutation({})
@@ -36,11 +36,12 @@ const VoiceRecognition = () => {
         setReminder(data.reminder)
         setTranscription(data.text)
         setAudio(false)
+        setGenerateText(false)
       }
     })
   }, [audio])
 
-  if (generateTextMutation.isPending) return <Loading />
+  if (generateTextMutation.isPending || generateText) return <Loading />
 
   return (
     <div className='w-full md:h-auto rounded-2xl flex p-8 flex-col items-center md:space-y-18'>

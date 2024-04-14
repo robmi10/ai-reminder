@@ -154,7 +154,7 @@ const Reminder = () => {
                 <Buttonanimate href="/dashboard/recorder" back={true} />
                 <span className='text-xs'>Go to recorder</span>
             </div>
-            <div className='place-items-center md:w-2/4 h-full grid md:grid-cols-2 w-3/4 gap-8'>
+            <div className='md:place-items-center md:w-2/4 h-full grid md:grid-cols-2 w-3/4 gap-8'>
                 {reminders && reminders.map((opts, index) => {
                     const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
                     const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");

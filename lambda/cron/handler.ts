@@ -62,7 +62,6 @@ export const checkReminder = async () => {
             ).execute()
         }))
 
-        console.log("inside checkReminder !", checkAllUpcomingReminders)
         const hasReminders = checkAllUpcomingReminders?.length > 0
         if (hasReminders) {
             await sendEmail(checkAllUpcomingReminders)

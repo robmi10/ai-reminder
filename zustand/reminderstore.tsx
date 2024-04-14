@@ -7,6 +7,8 @@ type ReminderStoreState = {
     setTranscription: (newTranscriptionState: string) => void;
     reminder: any;
     setReminder: (newReminderState: string | boolean) => void;
+    generateText: any;
+    setGenerateText: (generateTextState: string | boolean) => void;
 };
 
 export const useReminderStore = create<ReminderStoreState>((set) => ({
@@ -16,4 +18,6 @@ export const useReminderStore = create<ReminderStoreState>((set) => ({
     setTranscription: (transcriptionState) => set({ transcription: transcriptionState }),
     reminder: false,
     setReminder: (reminderState) => set({ reminder: reminderState }),
+    generateText: false,
+    setGenerateText: (generateTextState) => set({ generateText: generateTextState }),
 }))

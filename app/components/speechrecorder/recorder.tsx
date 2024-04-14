@@ -3,11 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 export const useRecorder = () => {
-
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
     const [recorder, setRecorder] = useState<any>(false)
     const chunks = useRef([]);
-    const { setAudio } = useReminderStore()
+    const { setAudio, setGenerateText } = useReminderStore()
 
     const handleUploadAudio = async (audioBlob: any) => {
         try {
@@ -22,7 +21,6 @@ export const useRecorder = () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log("data recorder check ->", data)
                 return data.url;
             } else {
                 throw new Error(data.error || "Failed to upload audio.");
@@ -36,7 +34,6 @@ export const useRecorder = () => {
 
     const handleGenerateText = async (blob: any) => {
         const audioUrl = await handleUploadAudio(blob) ?? ''
-        console.log("audioUrl current ->", audioUrl)
         setAudio(audioUrl)
     }
 
@@ -51,6 +48,7 @@ export const useRecorder = () => {
         if (mediaRecorder) {
             mediaRecorder.stop()
             setRecorder(false);
+            setGenerateText(true);
         }
     }
 
@@ -66,7 +64,6 @@ export const useRecorder = () => {
 
         voiceRecorder.onstop = () => {
             const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
-            console.log("audioBlob ->", audioBlob)
             handleGenerateText(audioBlob);
         }
         setMediaRecorder(voiceRecorder);

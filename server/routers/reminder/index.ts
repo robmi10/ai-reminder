@@ -14,21 +14,9 @@ export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
         z.object({ audio: z.string(), user: z.any() })
     ).mutation(async (opts) => {
-        console.log("inside generateText now here", opts.input.audio)
-
-
-        console.log("inside generateText opts.input.user?.phoneNumbers ->", opts.input.user?.phoneNumbers)
-
-
         const userId = opts.input.user?.id
         const phoneNumber = opts.input.user?.phoneNumbers.length > 0 ? opts.input.user?.phoneNumbers[0].phoneNumber : false
         const email = opts.input.user?.emailAddresses[0].emailAddress
-
-        console.log("")
-        console.log("inside input userId ->", userId)
-        console.log("inside input email ->", email)
-        console.log("inside input phoneNumber ->", phoneNumber)
-        console.log("")
 
         const replicate = new Replicate({
             auth: process.env.REPLICATE_API_TOKEN,
@@ -74,25 +62,17 @@ export const aiRouter = createTRPCRouter({
         })
 
         const reminder = response.choices[0].message.content
-        console.log("current time ->", new Date().toLocaleTimeString('en-US', { hour12: false }))
-        console.log("reminder ->", reminder)
-        const reminderList = reminder && JSON.parse(reminder)
 
-        console.log("reminderList ->", reminderList)
-        console.log("reminderList.length ->", reminderList.length)
+        const reminderList = reminder && JSON.parse(reminder)
         if (reminderList.length > 0) {
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    console.log("opt in array ->", opt)
                     const startDateTimeISO = `${opt.date}T${opt.time}:00`;
                     const reminderTimeISO = `${opt.date}T${opt.reminder}:00`;
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
-                    console.log("startDateTimeISO ->", startDateTimeISO)
-                    console.log("startDateTime ->", startDateTime)
-                    console.log("reminderTime ->", reminderTime)
                     await db.insertInto('event').values({
                         userId: userId,
                         desc: opt.task,
@@ -108,8 +88,6 @@ export const aiRouter = createTRPCRouter({
                     userId: userId,
                     date: usageDate.toISOString(),
                 }).execute()
-                console.log('All reminders have been inserted successfully.');
-
             } catch (error) {
                 console.error(error)
             }
@@ -135,7 +113,6 @@ export const aiRouter = createTRPCRouter({
         return usageLengthToday >= dailyLimit
     }),
     deleteReminder: protectedProcedure.input((z.object({ eventId: z.number() }))).mutation(async (opts) => {
-        console.log("eventId delete ->", opts.input.eventId)
         await db.deleteFrom('event').where('eventId', '=', opts.input.eventId).execute()
     }),
     insertPhoneNumber: protectedProcedure.input((z.object({ phone: z.string(), user: z.any() }))).mutation(async (opts) => {

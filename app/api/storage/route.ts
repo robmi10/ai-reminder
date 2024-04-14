@@ -25,10 +25,6 @@ export async function POST(req: any) {
     }
 
     const res = supabase.storage.from('reminders').getPublicUrl(filePath);
-    console.log("check res here ->", res)
     const fileUrl = res.data.publicUrl
-
-    console.log("check fileUrl here ->", fileUrl)
-    console.log("check now fileUrl ->", fileUrl)
     return NextResponse.json({ url: fileUrl }, { status: 200 });
 }

@@ -11,7 +11,6 @@ const Recorder = () => {
 
     useEffect(() => {
         if (reminder) {
-            console.log("go to -> dashboard/reminder")
             router.push('/dashboard/reminder')
             setReminder(false)
         }
@@ -23,9 +22,13 @@ const Recorder = () => {
                 <Buttonanimate href="/dashboard/reminder" front={true} />
                 <span className='text-xs'>Go to reminders</span>
             </div>
-            <span className='md:w-3/4 flex justify-center items-center text-xl'>
-                Capture Your Reminders in a Snap</span>
-            <VoiceRecognition />
+            {!reminder &&
+                <>
+                    <span className='md:w-3/4 flex justify-center items-center text-xl'>
+                        Capture Your Reminders in a Snap</span>
+                    <VoiceRecognition />
+                </>
+            }
         </div>
     )
 }
