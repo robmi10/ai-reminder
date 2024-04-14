@@ -29,15 +29,15 @@ const VoiceRecognition = () => {
   }
 
   useEffect(() => {
-    audio && generateTextMutation.mutate({
-      audio: audio, user: user
-    }, {
-      onSuccess(data: any) {
-        setReminder(data.reminder)
-        setTranscription(data.text)
-        setAudio(false)
-      }
-    })
+    // audio && generateTextMutation.mutate({
+    //   audio: audio, user: user
+    // }, {
+    //   onSuccess(data: any) {
+    //     setReminder(data.reminder)
+    //     setTranscription(data.text)
+    //     setAudio(false)
+    //   }
+    // })
   }, [audio])
 
   if (generateTextMutation.isPending) return <Loading />

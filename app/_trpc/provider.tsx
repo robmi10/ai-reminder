@@ -11,8 +11,8 @@ export default function Provider({ children }: { children: React.ReactNode }) {
             links: [
                 httpBatchLink({
                     // url: "http://localhost:3000/api/trpc",
-                    url: "https://ai-reminder.vercel.app/api/trpc",
-
+                    // url: "https://ai-reminder.vercel.app/api/trpc",
+                    url: "https://5c12-213-89-153-51.ngrok-free.app/api/trpc",
                 }),
             ],
         })

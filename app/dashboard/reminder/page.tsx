@@ -161,7 +161,7 @@ const Reminder = () => {
                     const id = opts.eventId
                     return (
                         <motion.div initial="initial"
-                            animate="animate" variants={iconVariants} key={index} className='w-full h-60 overflow-auto p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
+                            animate="animate" variants={iconVariants} key={index} className='w-full mb-8 h-60 overflow-auto p-8 gap-2 flex flex-col shadow-lg rounded-xl relative'>
                             <div className='absolute right-2 justify-end flex'>
                                 <div className='flex gap-2'>
                                     <Dialog open={modal} onOpenChange={setModal} >
@@ -175,7 +175,6 @@ const Reminder = () => {
                                                 });
                                             }}
                                             asChild className='w-full relative'>
-                                            <RxPencil1 className='cursor-pointer absolute w-full right-0 top-0' />
                                         </DialogTrigger>
                                         <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Edit Reminder</span>
@@ -209,7 +208,7 @@ const Reminder = () => {
                                                 eventId: opts.eventId
                                             });
                                         }} className='w-full relative'>
-                                            <CiTrash className='cursor-pointer absolute w-full right-0 top-0' />
+
                                         </DialogTrigger>
                                         <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Delete Reminder?</span>
@@ -224,9 +223,18 @@ const Reminder = () => {
                                         </DialogContent>
                                     </Dialog>
                                 </div></div>
+
                             <div className='flex flex-col'>
-                                <span className='font-medium'>Task</span>
-                                <span>{opts.desc}</span>
+                                <div className='w-full flex justify-between pt-1'>
+                                    <div className='flex flex-col'>
+                                        <span className='font-medium'>Task</span>
+                                        <span>{opts.desc}</span>
+                                    </div>
+                                    <div className='flex w-12'>
+                                        <RxPencil1 className='cursor-pointer w-full' />
+                                        <CiTrash className='cursor-pointer  w-full' />
+                                    </div>
+                                </div>
                             </div>
                             <div className='flex flex-col'>
                                 <span className='font-medium'>Start</span>

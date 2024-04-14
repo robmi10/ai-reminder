@@ -35,15 +35,15 @@ export const useRecorder = () => {
     }
 
     const handleGenerateText = async (blob: any) => {
-        const audioUrl = await handleUploadAudio(blob) ?? ''
-        console.log("audioUrl current ->", audioUrl)
-        setAudio(audioUrl)
+        // const audioUrl = await handleUploadAudio(blob) ?? ''
+        // console.log("audioUrl current ->", audioUrl)
+        // setAudio(audioUrl)
     }
 
     const startRecorder = () => {
+        setRecorder(true);
         if (mediaRecorder) {
             mediaRecorder.start()
-            setRecorder(true);
         }
     }
 
