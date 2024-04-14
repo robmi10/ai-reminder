@@ -165,29 +165,16 @@ const Reminder = () => {
                             <div className='absolute right-2 justify-end flex'>
                                 <div className='flex gap-2'>
                                     <Dialog open={modal} onOpenChange={setModal} >
-                                        <DialogTrigger
-                                            onClick={() => {
-                                                setRemindersObj({
-                                                    desc: opts.desc,
-                                                    start: extractTime(opts.start),
-                                                    reminder: extractTime(opts.reminder),
-                                                    eventId: opts.eventId
-                                                });
-                                            }}
-                                            asChild className='w-full relative'>
-                                        </DialogTrigger>
                                         <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Edit Reminder</span>
                                             <div>
                                                 <span className='text-sm'>Description</span>
                                                 <Input value={remindersObj.desc} onChange={(e) => { setRemindersObj(current => ({ ...current, desc: e.target.value })) }} type='text' placeholder="Desc" className='rounded-3xl border-stone-200 shadow-3xl placeholder:text-stone-400' />
                                             </div>
-
                                             <div>
                                                 <span className=' text-sm'>Task time</span>
                                                 <Input value={remindersObj.start} onChange={(e) => { setRemindersObj(current => ({ ...current, start: e.target.value })) }} type='time' placeholder="Task time" className='rounded-3xl border-stone-200 shadow-3xl placeholder:text-stone-400' />
                                             </div>
-
                                             <div>
                                                 <span className=' text-sm'>Reminder time</span>
                                                 <Input value={remindersObj.reminder} onChange={(e) => { setRemindersObj(current => ({ ...current, reminder: e.target.value })) }} type='time' placeholder="Reminder " className='rounded-3xl border-stone-200 shadow-3xl placeholder:text-stone-400' />
@@ -200,16 +187,6 @@ const Reminder = () => {
                                     </Dialog>
 
                                     <Dialog open={modalDelete} onOpenChange={setModalDelete}>
-                                        <DialogTrigger asChild onClick={() => {
-                                            setRemindersObj({
-                                                desc: opts.desc,
-                                                start: extractTime(opts.start),
-                                                reminder: extractTime(opts.reminder),
-                                                eventId: opts.eventId
-                                            });
-                                        }} className='w-full relative'>
-
-                                        </DialogTrigger>
                                         <DialogContent className='bg-white w-10/12 md:w-full rounded-xl p-8 shadow-2xl'>
                                             <span className='text-xl'>Delete Reminder?</span>
                                             <DialogDescription>
@@ -231,8 +208,24 @@ const Reminder = () => {
                                         <span>{opts.desc}</span>
                                     </div>
                                     <div className='flex w-12'>
-                                        <RxPencil1 className='cursor-pointer w-full' />
-                                        <CiTrash className='cursor-pointer  w-full' />
+                                        <RxPencil1 onClick={() => {
+                                            setRemindersObj({
+                                                desc: opts.desc,
+                                                start: extractTime(opts.start),
+                                                reminder: extractTime(opts.reminder),
+                                                eventId: opts.eventId
+                                            }),
+                                                setModal(true)
+                                        }} className='cursor-pointer w-full' />
+                                        <CiTrash onClick={() => {
+                                            setRemindersObj({
+                                                desc: opts.desc,
+                                                start: extractTime(opts.start),
+                                                reminder: extractTime(opts.reminder),
+                                                eventId: opts.eventId
+                                            }),
+                                                setModalDelete(true)
+                                        }} className='cursor-pointer  w-full' />
                                     </div>
                                 </div>
                             </div>
