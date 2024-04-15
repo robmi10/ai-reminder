@@ -80,9 +80,10 @@ export const checkReminder = async () => {
         const hasReminders = checkAllUpcomingReminders?.length > 0
 
         console.log("hasReminders -> ", hasReminders)
+
         if (hasReminders) {
             console.log("inside hasReminders now")
-            await sendEmail(checkAllUpcomingReminders)
+            // await sendEmail(checkAllUpcomingReminders)
             await sendSMS(checkAllUpcomingReminders)
         }
         return {
