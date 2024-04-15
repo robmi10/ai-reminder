@@ -2,6 +2,15 @@ import EmailTemplate from '@/app/components/email';
 import { db } from '@/utils/db/db';
 import { Resend } from 'resend';
 import { format } from 'date-fns';
+
+if (typeof global.Headers === 'undefined') {
+    const fetch = require('node-fetch');
+    global.Headers = fetch.Headers;
+    global.Request = fetch.Request;
+    global.Response = fetch.Response;
+}
+
+
 interface Reminder {
     start: Date;
     desc: string;
