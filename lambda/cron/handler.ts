@@ -39,33 +39,33 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
     }
 }
 
-const sendEmail = async (checkAllUpcomingReminders: any) => {
-    if (typeof global.Headers === 'undefined') {
-        const fetch = require('node-fetch');
-        global.Headers = fetch.Headers;
-        global.Request = fetch.Request;
-        global.Response = fetch.Response;
-    }
-    const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
+// const sendEmail = async (checkAllUpcomingReminders: any) => {
+//     if (typeof global.Headers === 'undefined') {
+//         const fetch = require('node-fetch');
+//         global.Headers = fetch.Headers;
+//         global.Request = fetch.Request;
+//         global.Response = fetch.Response;
+//     }
+//     const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 
-    console.log("check process.env.NEXT_RESEND_API_KEY ->", process.env.NEXT_RESEND_API_KEY)
-    const emailPromises = checkAllUpcomingReminders.map((reminder: Reminder) => {
-        const date = new Date(reminder.start.toString());
-        return resend.emails.send({
-            from: 'AI Task Reminder <onboarding@resend.dev>',
-            to: [`${reminder.email}`],
-            subject: "AI Task Reminder",
-            react: EmailTemplate({ reminder: reminder.desc, dueDate: format(date, "EEEE, MMMM do, yyyy 'at' HH:mm") }) as React.ReactElement,
-        }).then(response => console.log(`Email sent successfully: ${response}`))
-            .catch(error => console.error(`Failed to send email: ${error}`));;
-    });
-    try {
-        const results = await Promise.all(emailPromises);
-        return new Response(JSON.stringify({ success: true, results }), { status: 200 });
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error }), { status: 500 });
-    }
-}
+//     console.log("check process.env.NEXT_RESEND_API_KEY ->", process.env.NEXT_RESEND_API_KEY)
+//     const emailPromises = checkAllUpcomingReminders.map((reminder: Reminder) => {
+//         const date = new Date(reminder.start.toString());
+//         return resend.emails.send({
+//             from: 'AI Task Reminder <onboarding@resend.dev>',
+//             to: [`${reminder.email}`],
+//             subject: "AI Task Reminder",
+//             react: EmailTemplate({ reminder: reminder.desc, dueDate: format(date, "EEEE, MMMM do, yyyy 'at' HH:mm") }) as React.ReactElement,
+//         }).then(response => console.log(`Email sent successfully: ${response}`))
+//             .catch(error => console.error(`Failed to send email: ${error}`));;
+//     });
+//     try {
+//         const results = await Promise.all(emailPromises);
+//         return new Response(JSON.stringify({ success: true, results }), { status: 200 });
+//     } catch (error) {
+//         return new Response(JSON.stringify({ error: error }), { status: 500 });
+//     }
+// }
 
 export const checkReminder = async () => {
     try {
