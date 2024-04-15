@@ -19,7 +19,7 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 
         return client.messages
             .create({
-                body: `Reminder: '${reminder.desc}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: http://localhost:3000/`,
+                body: `Reminder: '${reminder.desc}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: https://www.aireminder.xyz/`,
                 to: reminder.phone,
                 from: '+18582641195',
             })
