@@ -3,14 +3,6 @@ import { db } from '@/utils/db/db';
 import { Resend } from 'resend';
 import { format } from 'date-fns';
 
-if (typeof global.Headers === 'undefined') {
-    const fetch = require('node-fetch');
-    global.Headers = fetch.Headers;
-    global.Request = fetch.Request;
-    global.Response = fetch.Response;
-}
-
-
 interface Reminder {
     start: Date;
     desc: string;
@@ -48,6 +40,12 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 }
 
 const sendEmail = async (checkAllUpcomingReminders: any) => {
+    if (typeof global.Headers === 'undefined') {
+        const fetch = require('node-fetch');
+        global.Headers = fetch.Headers;
+        global.Request = fetch.Request;
+        global.Response = fetch.Response;
+    }
     const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 
     console.log("check process.env.NEXT_RESEND_API_KEY ->", process.env.NEXT_RESEND_API_KEY)
