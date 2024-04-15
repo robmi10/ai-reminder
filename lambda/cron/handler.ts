@@ -95,7 +95,7 @@ export const checkReminder = async () => {
 export const deleteReminders = async () => {
     try {
         const now = new Date();
-        await db.deleteFrom('event').where('status', '==', true).execute();
+        await db.deleteFrom('event').where('status', '=', true).execute();
         return {
             statusCode: 200,
             body: JSON.stringify({ message: "Reminders deleted." }),
