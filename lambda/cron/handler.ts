@@ -69,6 +69,8 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 
 export const checkReminder = async () => {
     try {
+        console.log("check checkReminder here");
+
         const now = new Date().toISOString();
         const checkAllUpcomingReminders = await db.selectFrom('event').where('start', '>=', now).where('reminder', '<=', now).where('status', '=', false).selectAll().execute()
 
