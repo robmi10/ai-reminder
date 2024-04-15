@@ -1,0 +1,361 @@
+{
+  "service": {
+    "service": "reminder-check-service",
+    "serviceObject": {
+      "name": "reminder-check-service"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs16.x",
+      "region": "eu-north-1",
+      "deploymentBucket": "ai-reminder-bucket",
+      "environment": {
+        "DATABASE_URL": "postgres://postgres.fdmmjofoobfqmxcrwbvp:UQ7jkgpH229Hznsk@aws-0-eu-central-1.pooler.supabase.com:5432/postgres",
+        "NEXT_RESEND_API_KEY": "re_BkK4rPM8_9yQxxAFksfvgCd9khe36LmWz",
+        "TWILIO_ACCOUNT_SID": "AC910a810a383805a46058650539c315b2",
+        "TWILIO_AUTH_TOKEN": "a1cbdfa4b6629af06be5977675c91199"
+      },
+      "stage": "dev",
+      "versionFunctions": true,
+      "deploymentBucketObject": {
+        "name": "ai-reminder-bucket"
+      },
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "CheckRemindersLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/reminder-check-service-dev-checkReminders"
+            }
+          },
+          "DeleteRemindersLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/reminder-check-service-dev-deleteReminders"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "reminder-check-service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/reminder-check-service-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/reminder-check-service-dev*:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "reminder-check-service",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "CheckRemindersLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "ai-reminder-bucket",
+                "S3Key": "serverless/reminder-check-service/dev/1713183335824-2024-04-15T12:15:35.824Z/reminder-check-service.zip"
+              },
+              "Handler": "./lambda/cron/handler.checkReminder",
+              "Runtime": "nodejs16.x",
+              "FunctionName": "reminder-check-service-dev-checkReminders",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DATABASE_URL": "postgres://postgres.fdmmjofoobfqmxcrwbvp:UQ7jkgpH229Hznsk@aws-0-eu-central-1.pooler.supabase.com:5432/postgres",
+                  "NEXT_RESEND_API_KEY": "re_BkK4rPM8_9yQxxAFksfvgCd9khe36LmWz",
+                  "TWILIO_ACCOUNT_SID": "AC910a810a383805a46058650539c315b2",
+                  "TWILIO_AUTH_TOKEN": "a1cbdfa4b6629af06be5977675c91199"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CheckRemindersLogGroup"
+            ]
+          },
+          "DeleteRemindersLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "ai-reminder-bucket",
+                "S3Key": "serverless/reminder-check-service/dev/1713183335824-2024-04-15T12:15:35.824Z/reminder-check-service.zip"
+              },
+              "Handler": "./lambda/cron/handler.deleteReminders",
+              "Runtime": "nodejs16.x",
+              "FunctionName": "reminder-check-service-dev-deleteReminders",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DATABASE_URL": "postgres://postgres.fdmmjofoobfqmxcrwbvp:UQ7jkgpH229Hznsk@aws-0-eu-central-1.pooler.supabase.com:5432/postgres",
+                  "NEXT_RESEND_API_KEY": "re_BkK4rPM8_9yQxxAFksfvgCd9khe36LmWz",
+                  "TWILIO_ACCOUNT_SID": "AC910a810a383805a46058650539c315b2",
+                  "TWILIO_AUTH_TOKEN": "a1cbdfa4b6629af06be5977675c91199"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "DeleteRemindersLogGroup"
+            ]
+          },
+          "CheckRemindersLambdaVersionLhOAOsLzENf8ZvLn9Aa9mnBEdkc7XWGhmrn2RJyR8pY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CheckRemindersLambdaFunction"
+              },
+              "CodeSha256": "vfRUx9fbT9MJJijs+9vluaFoOQxKIC2rd5eCb9gC8+A="
+            }
+          },
+          "DeleteRemindersLambdaVersionMwOY9h6b6PUQWSYCIxY1s3nZftGiQdCk4DjKhfVs": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteRemindersLambdaFunction"
+              },
+              "CodeSha256": "vfRUx9fbT9MJJijs+9vluaFoOQxKIC2rd5eCb9gC8+A="
+            }
+          },
+          "CheckRemindersEventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(1 minute)",
+              "State": "ENABLED",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "CheckRemindersLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "checkRemindersSchedule"
+                }
+              ]
+            }
+          },
+          "CheckRemindersLambdaPermissionEventsRuleSchedule1": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CheckRemindersLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "events.amazonaws.com",
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "CheckRemindersEventsRuleSchedule1",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "DeleteRemindersEventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(1 hour)",
+              "State": "ENABLED",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "DeleteRemindersLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "deleteRemindersSchedule"
+                }
+              ]
+            }
+          },
+          "DeleteRemindersLambdaPermissionEventsRuleSchedule1": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DeleteRemindersLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "events.amazonaws.com",
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "DeleteRemindersEventsRuleSchedule1",
+                  "Arn"
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "ai-reminder-bucket",
+            "Export": {
+              "Name": "sls-reminder-check-service-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "CheckRemindersLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CheckRemindersLambdaVersionLhOAOsLzENf8ZvLn9Aa9mnBEdkc7XWGhmrn2RJyR8pY"
+            },
+            "Export": {
+              "Name": "sls-reminder-check-service-dev-CheckRemindersLambdaFunctionQualifiedArn"
+            }
+          },
+          "DeleteRemindersLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteRemindersLambdaVersionMwOY9h6b6PUQWSYCIxY1s3nZftGiQdCk4DjKhfVs"
+            },
+            "Export": {
+              "Name": "sls-reminder-check-service-dev-DeleteRemindersLambdaFunctionQualifiedArn"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "plugins": [
+      "serverless-esbuild",
+      "serverless-offline"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "checkReminders": {
+        "handler": "./lambda/cron/handler.checkReminder",
+        "events": [
+          {
+            "schedule": "rate(1 minute)"
+          }
+        ],
+        "name": "reminder-check-service-dev-checkReminders",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs16.x",
+        "vpc": {},
+        "versionLogicalId": "CheckRemindersLambdaVersionLhOAOsLzENf8ZvLn9Aa9mnBEdkc7XWGhmrn2RJyR8pY"
+      },
+      "deleteReminders": {
+        "handler": "./lambda/cron/handler.deleteReminders",
+        "events": [
+          {
+            "schedule": "rate(1 hour)"
+          }
+        ],
+        "name": "reminder-check-service-dev-deleteReminders",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs16.x",
+        "vpc": {},
+        "versionLogicalId": "DeleteRemindersLambdaVersionMwOY9h6b6PUQWSYCIxY1s3nZftGiQdCk4DjKhfVs"
+      }
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "initialServerlessConfig": {
+      "service": "reminder-check-service",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      }
+    },
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/reminder-check-service/dev/1713183335824-2024-04-15T12:15:35.824Z",
+    "artifact": "reminder-check-service.zip"
+  }
+}
