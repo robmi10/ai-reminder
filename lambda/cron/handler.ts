@@ -133,7 +133,6 @@ export const checkReminder = async () => {
 
 export const deleteReminders = async () => {
     try {
-        const now = new Date();
         await db.deleteFrom('event').where('status', '=', true).execute();
         return {
             statusCode: 200,
