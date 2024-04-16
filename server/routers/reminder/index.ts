@@ -81,6 +81,7 @@ export const aiRouter = createTRPCRouter({
                         status: false,
                         email: email,
                         phone: phoneNumber,
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
                     }).execute()
 
                 }));
