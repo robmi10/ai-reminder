@@ -8,6 +8,7 @@ export interface Event {
     start: string;
     status?: boolean;
     createdAt: end;
+    timeZone: string;
 }
 
 export interface ReminderUsage {
