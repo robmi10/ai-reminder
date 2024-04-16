@@ -35,6 +35,14 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 }
 
 const sendEmail = async (checkAllUpcomingReminders: any) => {
+    if (typeof global.Headers === 'undefined') {
+        const fetch = require('node-fetch');
+        global.fetch = fetch; // Make fetch available globally
+        global.Headers = fetch.Headers;
+        global.Request = fetch.Request;
+        global.Response = fetch.Response;
+    }
+
     const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 
     const emailPromises = checkAllUpcomingReminders.map((reminder: Reminder) => {
