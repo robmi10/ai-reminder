@@ -1,6 +1,7 @@
 import { db } from '@/utils/db/db';
 import { format } from 'date-fns';
 import fetch from 'node-fetch';
+import moment from "moment-timezone"
 
 interface Reminder {
     start: Date;
@@ -9,13 +10,27 @@ interface Reminder {
     phone: string;
     email: string;
 }
+
+function formatReminderStart(reminderStart: any, timeZone = 'Europe/Berlin') {
+    return moment(reminderStart).tz(timeZone).format('YYYY-MM-DD HH:mm');
+}
+
 const sendSMS = async (checkAllUpcomingReminders: any) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = require('twilio')(accountSid, authToken);
 
     const smsPromise = checkAllUpcomingReminders.map((reminder: Reminder) => {
-        const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm");
+        // const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm").toLocaleString();
+        const date = formatReminderStart(reminder.start)
+        console.log("reminder.start ->", reminder.start)
+
+        console.log("format date check new ->", date)
+
+        const localDate = date.toLocaleString();  // This converts to the user's local timezone
+        console.log("Local Date:", localDate);
+
+
         return client.messages
             .create({
                 body: `Reminder: '${reminder.desc}' starts at ${date}. Details and completion: https://www.aireminder.xyz/`,
@@ -35,7 +50,9 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 const sendEmail = async (checkAllUpcomingReminders: any) => {
     // Mapping over reminders to create an array of fetch promises
     const emailPromises = checkAllUpcomingReminders.map((reminder: any) => {
-        const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm");
+        // const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm").toLocaleString();
+        const date = formatReminderStart(reminder.start)
+
         const emailHtml = `
         <div style="font-family: Arial, sans-serif; color: #333;">
             <p>We hope this message finds you well.</p>
@@ -103,6 +120,11 @@ export const checkReminder = async () => {
         }))
 
         const hasReminders = checkAllUpcomingReminders?.length > 0
+
+        console.log("checkAllUpcomingReminders ->", checkAllUpcomingReminders)
+
+        console.log("hasReminders ->", hasReminders)
+
         if (hasReminders) {
             await sendEmail(checkAllUpcomingReminders)
             await sendSMS(checkAllUpcomingReminders)
@@ -122,20 +144,20 @@ export const checkReminder = async () => {
 };
 
 export const deleteReminders = async () => {
-    try {
-        const now = new Date();
-        await db.deleteFrom('event').where('status', '=', true).execute();
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: "Reminders deleted." }),
-        };
-    } catch (error) {
-        console.error(error)
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: "Failed to delete reminders." }),
-        };
-    }
+    // try {
+    //     const now = new Date();
+    //     await db.deleteFrom('event').where('status', '=', true).execute();
+    //     return {
+    //         statusCode: 200,
+    //         body: JSON.stringify({ message: "Reminders deleted." }),
+    //     };
+    // } catch (error) {
+    //     console.error(error)
+    //     return {
+    //         statusCode: 500,
+    //         body: JSON.stringify({ message: "Failed to delete reminders." }),
+    //     };
+    // }
 
 
 }
