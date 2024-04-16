@@ -1,7 +1,6 @@
-import EmailTemplate from '@/app/components/email';
 import { db } from '@/utils/db/db';
-import { Resend } from 'resend';
 import { format } from 'date-fns';
+import fetch from 'node-fetch';
 
 interface Reminder {
     start: Date;
@@ -35,33 +34,63 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 }
 
 const sendEmail = async (checkAllUpcomingReminders: any) => {
-    if (typeof global.Headers === 'undefined') {
-        const fetch = require('node-fetch');
-        global.fetch = fetch; // Make fetch available globally
-        global.Headers = fetch.Headers;
-        global.Request = fetch.Request;
-        global.Response = fetch.Response;
-    }
-
-    const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
-
-    const emailPromises = checkAllUpcomingReminders.map((reminder: Reminder) => {
+    // Mapping over reminders to create an array of fetch promises
+    const emailPromises = checkAllUpcomingReminders.map((reminder: any) => {
         const date = new Date(reminder.start.toString());
-        return resend.emails.send({
+        const emailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+            <p>We hope this message finds you well.</p>
+            <p>Just a friendly reminder that you have a pending task: <strong>${reminder.desc}</strong>, which is due on <strong>${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}</strong>. Completing tasks on time helps in maintaining progress and achieving your goals efficiently.</p>
+            <p>If it’s already on your radar, great! If not, now might be a good time to tackle it. Remember, breaking tasks into smaller steps can make them more manageable.</p>
+            <p>Should you need any help or have questions, we’re here for you.</p>
+            <p>Best regards,</p>
+            <p><strong>AI-Task-Reminder Team</strong></p>
+        </div>
+        `;
+
+        const emailBody = {
             from: 'AI Task Reminder <onboarding@aireminder.xyz>',
             to: [`${reminder.email}`],
-            subject: "AI Task Reminder",
-            react: EmailTemplate({ reminder: reminder.desc, dueDate: format(date, "EEEE, MMMM do, yyyy 'at' HH:mm") }) as React.ReactElement,
-        }).then(response => console.log(`Email sent successfully: ${response}`))
-            .catch(error => console.error(`Failed to send email: ${error}`));;
+            subject: 'AI Task Reminder',
+            html: emailHtml
+        };
+
+        return fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.NEXT_RESEND_API_KEY}`,
+            },
+            body: JSON.stringify(emailBody)
+        })
+            .then(response => response.json())
+            .then((data: any) => {
+                if (!data.success) {
+                    throw new Error(data.message);
+                }
+                return data;
+            })
+            .catch(error => {
+                console.error(`Failed to send email to ${reminder.email}:`, error);
+                return null;
+            });
     });
+
     try {
         const results = await Promise.all(emailPromises);
-        return new Response(JSON.stringify({ success: true, results }), { status: 200 });
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Reminder emails sent.", results }),
+        };
     } catch (error) {
-        return new Response(JSON.stringify({ error: error }), { status: 500 });
+        console.error("Error in sending emails:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: "Reminders email error.", error }),
+        };
     }
 }
+
 
 export const checkReminder = async () => {
     try {
