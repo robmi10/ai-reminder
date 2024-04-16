@@ -32,7 +32,7 @@ const VoiceRecognition = () => {
 
   useEffect(() => {
     audio && generateTextMutation.mutate({
-      audio: audio, user: user
+      audio: audio, user: user, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     }, {
       onSuccess(data: any) {
         setReminder(data.reminder)

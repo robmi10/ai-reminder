@@ -12,7 +12,7 @@ const client = new OpenAI({
 
 export const aiRouter = createTRPCRouter({
     generateText: protectedProcedure.input(
-        z.object({ audio: z.string(), user: z.any() })
+        z.object({ audio: z.string(), user: z.any(), timeZone: z.any() })
     ).mutation(async (opts) => {
         const userId = opts.input.user?.id
         const phoneNumber = opts.input.user?.phoneNumbers.length > 0 ? opts.input.user?.phoneNumbers[0].phoneNumber : false
@@ -81,7 +81,7 @@ export const aiRouter = createTRPCRouter({
                         status: false,
                         email: email,
                         phone: phoneNumber,
-                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        timeZone: opts.input.timeZone
                     }).execute()
 
                 }));
