@@ -9,12 +9,14 @@ import Globe from '../animation/globe';
 import Loading from '../loader/loading';
 import { useUser } from '@clerk/nextjs';
 import { twMerge } from 'tailwind-merge';
+import { useToast } from '@/components/ui/use-toast';
 
 const VoiceRecognition = () => {
   const { recorder, stopRecorder, startRecorder } = useRecorder()
   const { audio, setTranscription, setReminder, setAudio, generateText, setGenerateText } = useReminderStore()
   const [isHover, setIsHover] = useState(false)
   const { user } = useUser();
+  const { toast } = useToast()
   const generateTextMutation = api.ai.generateText.useMutation({})
   const isRemindersUsageFull = api.ai.isRemindersUsageAcceptable.useQuery({ user: user }).data
 
@@ -37,7 +39,15 @@ const VoiceRecognition = () => {
         setTranscription(data.text)
         setAudio(false)
         setGenerateText(false)
-      }
+      }, onError() {
+        setAudio(false)
+        setGenerateText(false)
+        toast({
+          variant: "destructive",
+          title: "Failed to Generate Reminders",
+          description: "Failed to generate the reminders. Please try again or contact support if the problem persists.",
+        })
+      },
     })
   }, [audio])
 

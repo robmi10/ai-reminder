@@ -1,10 +1,9 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 const colors = {
-  light: ['#e6f5fa', '#f2f8fa', '#fcfcfc'],
   dark: ['#f7f7f7', '#c6dee8', '#b9d9f0'],
   grey: ['#f2f0f0', '#e0e0e0', '#c9c7c7'],
-
+  dark: ['#fcdcdc', '#fcc7c7', '#fc8b8b'],
 };
 
 export const BouncerLoaderWrapper = styled.div`

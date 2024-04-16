@@ -15,11 +15,10 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
     const client = require('twilio')(accountSid, authToken);
 
     const smsPromise = checkAllUpcomingReminders.map((reminder: Reminder) => {
-        const date = new Date(reminder.start.toString());
-
+        const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm");
         return client.messages
             .create({
-                body: `Reminder: '${reminder.desc}' starts at ${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}. Details and completion: https://www.aireminder.xyz/`,
+                body: `Reminder: '${reminder.desc}' starts at ${date}. Details and completion: https://www.aireminder.xyz/`,
                 to: reminder.phone,
                 from: '+18582641195',
             })
@@ -36,11 +35,11 @@ const sendSMS = async (checkAllUpcomingReminders: any) => {
 const sendEmail = async (checkAllUpcomingReminders: any) => {
     // Mapping over reminders to create an array of fetch promises
     const emailPromises = checkAllUpcomingReminders.map((reminder: any) => {
-        const date = new Date(reminder.start.toString());
+        const date = format(new Date(reminder.start), "yyyy-MM-dd HH:mm");
         const emailHtml = `
         <div style="font-family: Arial, sans-serif; color: #333;">
             <p>We hope this message finds you well.</p>
-            <p>Just a friendly reminder that you have a pending task: <strong>${reminder.desc}</strong>, which is due on <strong>${format(date, "EEEE, MMMM do, yyyy 'at' HH:mm")}</strong>. Completing tasks on time helps in maintaining progress and achieving your goals efficiently.</p>
+            <p>Just a friendly reminder that you have a pending task: <strong>${reminder.desc}</strong>, which is due on <strong>${date}</strong>. Completing tasks on time helps in maintaining progress and achieving your goals efficiently.</p>
             <p>If it’s already on your radar, great! If not, now might be a good time to tackle it. Remember, breaking tasks into smaller steps can make them more manageable.</p>
             <p>Should you need any help or have questions, we’re here for you.</p>
             <p>Best regards,</p>
