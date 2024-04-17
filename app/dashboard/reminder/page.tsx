@@ -159,7 +159,7 @@ const Reminder = () => {
                     />
 
                     <div className='flex gap-4 justify-end'>
-                        <Button onClick={() => { setUserPhoneNumber() }} className='border w-1/4 just border-slate-100 shadow-2xl rounded-3xl text-sm h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
+                        <Button onClick={() => { setUserPhoneNumber() }} className=' border md:w-1/4 just border-slate-100 shadow-2xl rounded-3xl text-sm h-8 bg-gray-500 text-white hover:bg-gray-800 transition-colors duration-500'>SUBMIT</Button>
                     </div>
                 </DialogContent>
             </Dialog>

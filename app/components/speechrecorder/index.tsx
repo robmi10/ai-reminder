@@ -48,8 +48,6 @@ const VoiceRecognition = () => {
     checkMicrophonePermission();
   }, []);
 
-  console.log("micPermission check ->", micPermission)
-
   const variantToolTip = {
     animate: { opacity: 1, transition: { type: "springer", duration: 0.3, ease: "easeInOut" } },
     initial: { scale: 1, opacity: 0 }
