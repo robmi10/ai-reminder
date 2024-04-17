@@ -30,7 +30,7 @@ const VoiceRecognition = () => {
   useEffect(() => {
     const checkMicrophonePermission = async () => {
       try {
-        const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+        const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
         permissionStatus.onchange = () => {
           setMicPermission(permissionStatus.state);
         };
