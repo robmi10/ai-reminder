@@ -18,7 +18,8 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
     const [isHover, setIsHover] = useState(false)
     const router = useRouter();
 
-    const handleButtonClick = () => {
+    const handleButtonClick = (e: any) => {
+        e.stopPropagation();
         if (href) {
             router.push(href);
         }
@@ -39,11 +40,6 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
     const iconVariants = {
         hover: { scale: 1, opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } },
         initial: { scale: 0, opacity: 1 },
-    };
-
-    const iconVariantsback = {
-        hover: { scale: 1, opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } },
-        initial: { scale: 1, opacity: 1 },
     };
 
     return (
@@ -76,16 +72,18 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
                     </motion.button >
                 </SignInButton>}
             <AnimatePresence>
-                {isHover && <motion.button
+                {<motion.button
+                    onClick={handleButtonClick}
                     whileHover="hover"
-                    className={twMerge('absolute top-0 z-10 h-12 w-36 rounded-full flex justify-center items-center bg-gray-800',
+                    className={twMerge('absolute top-0 z-10 h-12 w-36 rounded-full flex justify-center items-center',
+                        !isHover ? 'transparent' : 'bg-gray-800 hover:transition-colors hover:duration-300',
                         (back || front) && 'h-12 w-12')}
                     initial="initial"
                     animate="animate"
                     exit="initial"
                     variants={variants
                     }>
-                    {<motion.span onClick={handleButtonClick} variants={iconVariants} animate={isHover ? "hover" : "initial"} className={twMerge('flex z-20 items-center h-full text-white',
+                    {<motion.span variants={iconVariants} animate={isHover ? "hover" : "initial"} className={twMerge('flex z-20 items-center h-full text-white',
                         !back && !front && 'absolute right-5'
                     )}
                     >
