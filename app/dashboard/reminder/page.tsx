@@ -67,7 +67,21 @@ const Reminder = () => {
     })
 
     const setUserPhoneNumber = () => {
-        user?.createPhoneNumber({ phoneNumber })
+        user?.createPhoneNumber({ phoneNumber }).then(() => {
+            toast({
+                variant: "success",
+                title: "Phone Number Added",
+                description: "Your phone number has been successfully added."
+            });
+        },
+        ).catch((error) => {
+            console.error(error)
+            toast({
+                variant: "destructive",
+                title: "Failed to Add Phone Number",
+                description: "We were unable to add your new phone number. Please check if the number is correct and try again."
+            });
+        })
         insertPhoneNumberMutation.mutate({ phone: phoneNumber, user: user })
     }
 
