@@ -25,6 +25,31 @@ const VoiceRecognition = () => {
     initial: { scale: 1, opacity: 1 },
   }
 
+  const [micPermission, setMicPermission] = useState('prompt'); // 'granted', 'denied', 'prompt'
+
+  useEffect(() => {
+    const checkMicrophonePermission = async () => {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+        permissionStatus.onchange = () => {
+          setMicPermission(permissionStatus.state);
+        };
+        setMicPermission(permissionStatus.state);
+      } catch (error) {
+        console.error('Error checking microphone permission:', error);
+        toast({
+          variant: "destructive",
+          title: "Permission Error",
+          description: "Could not check microphone permission. Make sure your browser supports this feature."
+        });
+      }
+    };
+
+    checkMicrophonePermission();
+  }, []);
+
+  console.log("micPermission check ->", micPermission)
+
   const variantToolTip = {
     animate: { opacity: 1, transition: { type: "springer", duration: 0.3, ease: "easeInOut" } },
     initial: { scale: 1, opacity: 0 }
@@ -58,8 +83,12 @@ const VoiceRecognition = () => {
       <Globe recorder={recorder} />
       <div className='h-2/4 w-full flex justify-center relative items-center'>
 
-        {isRemindersUsageFull && isHover && <motion.div variants={variantToolTip} animate="animate" initial="initial" className='absolute bottom-24 rounded-2xl  p-2 text-sm w-18'>
+        {isRemindersUsageFull && isHover && micPermission === 'granted' && <motion.div variants={variantToolTip} animate="animate" initial="initial" className='absolute bottom-24 rounded-2xl  p-2 text-sm w-18'>
           Thank you for using Ai Reminder! You&apos;ve created two reminders today, which is your daily limit.
+        </motion.div>}
+
+        {isHover && micPermission === 'denied' && <motion.div variants={variantToolTip} animate="animate" initial="initial" className='absolute bottom-24 rounded-2xl  p-2 text-sm w-18'>
+          Microphone access is denied. Please enable microphone permissions in your browser settings to use voice recognition features.
         </motion.div>}
 
 
@@ -68,7 +97,7 @@ const VoiceRecognition = () => {
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
             onClick={() => {
-              if (isRemindersUsageFull) return;
+              if (isRemindersUsageFull || micPermission === 'denied') return;
               !recorder ? startRecorder() : stopRecorder()
             }}
             className={twMerge('flex items-center gap-2 border rounded-full p-4 bg-gray-100',
@@ -79,7 +108,7 @@ const VoiceRecognition = () => {
               variants={variantAudio}
               initial="initial"
               animate={isHover && !isRemindersUsageFull ? "hover" : "initial"}
-              exit="initial"> {!isRemindersUsageFull ? <CiMicrophoneOn size={20} color='indigo' /> : <CiMicrophoneOff size={20} color='indigo' />}
+              exit="initial"> {(!isRemindersUsageFull && micPermission === 'granted') ? <CiMicrophoneOn size={20} color='indigo' /> : <CiMicrophoneOff size={20} color='indigo' />}
 
             </motion.div>}
 

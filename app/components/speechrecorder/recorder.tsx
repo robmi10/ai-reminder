@@ -1,6 +1,5 @@
 import { useReminderStore } from '@/zustand/reminderstore';
 import { useEffect, useRef, useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
 
 export const useRecorder = () => {
     const [mediaRecorder, setMediaRecorder] = useState<any>(false);
