@@ -38,7 +38,7 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
     };
 
     const iconVariants = {
-        hover: { scale: 1, opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } },
+        hover: { scale: 1, opacity: 1, transition: { duration: 0.2, ease: "easeInOut" } },
         initial: { scale: 0, opacity: 1 },
     };
 
@@ -76,7 +76,7 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
                     onClick={handleButtonClick}
                     whileHover="hover"
                     className={twMerge('absolute top-0 z-10 h-12 w-36 rounded-full flex justify-center items-center',
-                        !isHover ? 'transparent' : 'bg-gray-800 hover:transition-colors hover:duration-300',
+                        !isHover ? 'transparent' : 'bg-gray-800 hover:transition-colors ',
                         (back || front) && 'h-12 w-12')}
                     initial="initial"
                     animate="animate"
