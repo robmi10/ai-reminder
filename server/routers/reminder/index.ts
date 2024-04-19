@@ -22,44 +22,58 @@ export const aiRouter = createTRPCRouter({
             auth: process.env.REPLICATE_API_TOKEN,
         });
 
-        const output: any = await replicate.run(
-            "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
-            {
-                input: {
-                    audio: opts.input.audio,
-                    model: "large-v3",
-                    translate: false,
-                    temperature: 0,
-                    transcription: "plain text",
-                    suppress_tokens: "-1",
-                    logprob_threshold: -1,
-                    no_speech_threshold: 0.6,
-                    condition_on_previous_text: true,
-                    compression_ratio_threshold: 2.4,
-                    temperature_increment_on_fallback: 0.2
-                }
-            }
-        );
+        let output: any;
 
-        const text = output.transcription
-        console.log("text ->", text)
-        const response = await client.chat.completions.create({
-            messages: [
+        try {
+            output = await replicate.run(
+                "openai/whisper:4d50797290df275329f202e48c76360b3f22b08d28c196cbc54600319435f8d2",
                 {
-                    role: 'system',
-                    content: `Convert the spoken text into structured task reminders as JSON objects.
+                    input: {
+                        audio: opts.input.audio,
+                        model: "large-v3",
+                        translate: false,
+                        temperature: 0,
+                        transcription: "plain text",
+                        suppress_tokens: "-1",
+                        logprob_threshold: -1,
+                        no_speech_threshold: 0.6,
+                        condition_on_previous_text: true,
+                        compression_ratio_threshold: 2.4,
+                        temperature_increment_on_fallback: 0.2
+                    }
+                }
+            )
+        } catch (error) {
+            console.error("Replicate API call failed:", error);
+            throw new Error("Failed to process audio with Replicate API. Please check audio input and API settings.");
+        }
+
+        const text = output?.transcription
+        console.log("text ->", text)
+
+        let response: any
+        try {
+            response = await client.chat.completions.create({
+                messages: [
+                    {
+                        role: 'system',
+                        content: `Convert the spoken text into structured task reminders as JSON objects.
                     Each task should include 'task' (a brief description), 'date' (YYYY-MM-DD), 'time' (HH:MM in 24-hour format), and 'reminder' (HH:MM in 24-hour format).
                     If a task mentions a relative time (like "in 2 hours" or like "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false })}.
                     If a task does not specify a date, use the most recently mentioned date in the text. If no date is mentioned, use today's date (${new Date().toISOString().split('T')[0]}).
                     If a task does not specify a reminder time, use the most recently mentioned reminder time in the text. If no reminder time is mentioned at all, set the reminders to 10 minutes before the task's start time.
                     Ensure the output is formatted as follows:\n\n[{ 'task': 'Task description', 'date': 'YYYY-MM-DD', 'time': 'HH:MM', 'reminder': 'HH:MM'}] and that there is no text inside the ouput`
-                },
-                {
-                    role: 'user',
-                    content: text
-                }
-            ], model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        })
+                    },
+                    {
+                        role: 'user',
+                        content: text
+                    }
+                ], model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+            })
+        } catch (error) {
+            console.error("Mixtral API call failed:", error);
+            throw new Error("Failed to generate reminders with Mixtral. Please check input text and model configuration.");
+        }
 
         const reminder = response.choices[0].message.content
 
