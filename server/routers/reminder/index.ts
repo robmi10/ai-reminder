@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
 import { format } from "date-fns";
 import Replicate from 'replicate';
+import moment from "moment-timezone";
 
 const client = new OpenAI({
     apiKey: process.env.TOGETHER_API_KEY,
@@ -82,10 +83,20 @@ export const aiRouter = createTRPCRouter({
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
-                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
+                    // const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
+                    // const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
+                    // const startDateTime = new Date(startDateTimeISO);
+                    // const reminderTime = new Date(reminderTimeISO);
+
+                    const startDateTimeISO = moment.utc(`${opt.date}T${opt.time}:00`).toISOString();
+                    const reminderTimeISO = moment.utc(`${opt.date}T${opt.reminder}:00`).toISOString();
+
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
+
+                    console.log("reminderTimeISO ->", reminderTimeISO)
+                    console.log("startDateTimeISO ->", startDateTimeISO)
+
 
                     await db.insertInto('event').values({
                         userId: userId,
