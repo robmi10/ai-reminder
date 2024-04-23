@@ -79,24 +79,19 @@ export const aiRouter = createTRPCRouter({
         const reminder = response.choices[0].message.content
 
         const reminderList = reminder && JSON.parse(reminder)
+
+        console.log("reminderList ->", reminderList)
         if (reminderList.length > 0) {
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    // const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
-                    // const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
-                    // const startDateTime = new Date(startDateTimeISO);
-                    // const reminderTime = new Date(reminderTimeISO);
-
-                    const startDateTimeISO = moment.utc(`${opt.date}T${opt.time}:00`).toISOString();
-                    const reminderTimeISO = moment.utc(`${opt.date}T${opt.reminder}:00`).toISOString();
-
+                    const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
+                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
                     console.log("reminderTimeISO ->", reminderTimeISO)
                     console.log("startDateTimeISO ->", startDateTimeISO)
-
 
                     await db.insertInto('event').values({
                         userId: userId,
