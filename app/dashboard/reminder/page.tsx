@@ -170,8 +170,8 @@ const Reminder = () => {
             </div>
             <div className='md:place-items-center md:w-2/4 h-full grid md:grid-cols-2 w-3/4 gap-8'>
                 {reminders && reminders.map((opts, index) => {
-                    const startDate = format(new Date(opts.start), "yyyy-MM-dd HH:mm");
-                    const reminderDate = format(new Date(opts.reminder), "yyyy-MM-dd HH:mm");
+                    const startDate = moment.utc(opts.start).format('YYYY-MM-DD HH:mm');
+                    const reminderDate = moment.utc(opts.reminder).format('YYYY-MM-DD HH:mm');
                     const id = opts.eventId
                     return (
                         <motion.div initial="initial"
