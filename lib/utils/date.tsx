@@ -1,3 +1,5 @@
+import moment from "moment-timezone";
+
 export function convertLocalTimeToUTCSimple(localTime: any) {
     const [hours, minutes] = localTime.split(":").map(Number);
     const now = new Date();
@@ -11,4 +13,8 @@ export function convertLocalTimeToUTCSimple(localTime: any) {
     const utcTimeStr = [utcHours.toString().padStart(2, '0'), utcMinutes.toString().padStart(2, '0')].join(':');
 
     return utcTimeStr;
+}
+
+export function formatReminderStart(reminderStart: any, timeZone: any) {
+    return moment(reminderStart).tz(timeZone).format('YYYY-MM-DD HH:mm');
 }

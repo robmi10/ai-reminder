@@ -19,6 +19,7 @@ import Loading from '@/app/components/loader/loading';
 import { useUser } from '@clerk/nextjs';
 import { PhoneInput } from 'react-international-phone';
 import 'react-international-phone/style.css';
+import moment from 'moment-timezone';
 
 interface Reminder {
     desc: string;
@@ -128,7 +129,7 @@ const Reminder = () => {
     }
 
     const extractTime = (isoString: any) => {
-        const date = new Date(isoString);
+        const date = new Date(moment(isoString).tz(Intl.DateTimeFormat().resolvedOptions().timeZone).format('YYYY-MM-DD HH:mm'));
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;

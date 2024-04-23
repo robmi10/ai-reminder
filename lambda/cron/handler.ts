@@ -1,7 +1,6 @@
 import { db } from '@/utils/db/db';
-import { format } from 'date-fns';
 import fetch from 'node-fetch';
-import moment from "moment-timezone"
+import { formatReminderStart } from '@/lib/utils/date';
 
 interface Reminder {
     start: Date;
@@ -12,9 +11,6 @@ interface Reminder {
     timeZone: string;
 }
 
-function formatReminderStart(reminderStart: any, timeZone: any) {
-    return moment(reminderStart).tz(timeZone).format('YYYY-MM-DD HH:mm');
-}
 
 const sendSMS = async (checkAllUpcomingReminders: any) => {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
