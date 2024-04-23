@@ -82,8 +82,8 @@ export const aiRouter = createTRPCRouter({
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    const startDateTimeISO = `${opt.date}T${opt.time}:00`;
-                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00`;
+                    const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
+                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
