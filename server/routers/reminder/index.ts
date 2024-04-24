@@ -52,13 +52,6 @@ export const aiRouter = createTRPCRouter({
         const text = output?.transcription
         console.log("text ->", text)
 
-        console.log("${new Date().toLocaleTimeString('en-US', { hour12: false })} ->", new Date().toLocaleTimeString('en-US', { hour12: false }))
-        console.log("new Date().toISOString().split('T')[0] ->", new Date().toISOString().split('T')[0])
-        console.log("Today's date and time is ${new Date().toISOString()} ->", new Date().toISOString())
-
-        console.log("${new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: opts.input.timeZone } TIME ZONE ->",
-            new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: opts.input.timeZone }))
-
         let response: any
         try {
             response = await client.chat.completions.create({
@@ -86,21 +79,14 @@ export const aiRouter = createTRPCRouter({
         const reminder = response.choices[0].message.content
 
         const reminderList = reminder && JSON.parse(reminder)
-
-        console.log("reminderList ->", reminderList)
         if (reminderList.length > 0) {
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    console.log("opt.time ->", opt.time)
-                    console.log("opt.time ->", opt.reminder)
                     const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
                     const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
-
-                    console.log("reminderTimeISO ->", reminderTimeISO)
-                    console.log("startDateTimeISO ->", startDateTimeISO)
 
                     await db.insertInto('event').values({
                         userId: userId,
