@@ -52,6 +52,10 @@ export const aiRouter = createTRPCRouter({
         const text = output?.transcription
         console.log("text ->", text)
 
+        console.log("${new Date().toLocaleTimeString('en-US', { hour12: false })} ->", new Date().toLocaleTimeString('en-US', { hour12: false }))
+        console.log("new Date().toISOString().split('T')[0] ->", new Date().toISOString().split('T')[0])
+        console.log("Today's date and time is ${new Date().toISOString()} ->", new Date().toISOString())
+
         let response: any
         try {
             response = await client.chat.completions.create({
@@ -60,7 +64,7 @@ export const aiRouter = createTRPCRouter({
                         role: 'system',
                         content: `Convert the spoken text into structured task reminders as JSON objects.
                         Each task should include "task" (a brief description), "date" (YYYY-MM-DD), "time" (HH:MM in 24-hour format), and "reminder" (HH:MM in 24-hour format).
-                        If a task mentions a relative time (like "in 2 hours" or like "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false })}.
+                        If a task mentions a relative time (like "in 2 hours" or like "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date and time is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false })}.
                         If a task does not specify a date, use the most recently mentioned date in the text. If no date is mentioned, use today's date (${new Date().toISOString().split('T')[0]}).
                         If a task does not specify a reminder time, use the most recently mentioned reminder time in the text. If no reminder time is mentioned at all, set the reminders to 10 minutes before the task's start time.
                         Ensure the output is formatted as follows:\n\n[{ "task": "Task description", "date": "YYYY-MM-DD", "time": "HH:MM", "reminder": "HH:MM"}] and that there is no text inside the output.`
