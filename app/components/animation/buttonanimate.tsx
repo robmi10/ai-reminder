@@ -63,14 +63,15 @@ const Buttonanimate = ({ title, back, front, href, login }: props) => {
                     <motion.button
                         whileHover="hover" className={twMerge('relative h-12 w-36 rounded-full flex z-5 justify-center items-center border bg-gray-500 text-white',
                             (back || front) && 'h-12 w-12')}>
-                        {!back && <motion.span variants={textVariants} animate={isHover ? "hover" : "initial"} className='flex z-20 items-center h-full'
+                        {!back && <motion.span variants={textVariants} animate={isHover ? "hover" : "initial"} className='flex z-20 w-36 rounded-full bg-transparent justify-center items-center  h-full'
                         >
                             {title}</motion.span>}
 
                         {back && !front && !isHover && <GoArrowUpLeft size={15} />}
                         {front && !back && !isHover && <BiSolidBellRing size={14} />}
                     </motion.button >
-                </SignInButton>}
+                </SignInButton>
+            }
             <AnimatePresence>
                 {<motion.button
                     onClick={handleButtonClick}
