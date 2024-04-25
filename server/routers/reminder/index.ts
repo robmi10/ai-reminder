@@ -51,6 +51,8 @@ export const aiRouter = createTRPCRouter({
 
         const text = output?.transcription
         console.log("text ->", text)
+        const currentDateUTC = new Date().toISOString();
+        const currentTimeUTC = new Date().getUTCHours() + ':' + new Date().getUTCMinutes() + ':' + new Date().getUTCSeconds();
 
         let response: any
         try {
@@ -60,8 +62,8 @@ export const aiRouter = createTRPCRouter({
                         role: 'system',
                         content: `Convert the spoken text into structured task reminders as JSON objects.
                         Each task should include "task" (a brief description), "date" (YYYY-MM-DD), "time" (HH:MM in 24-hour format), and "reminder" (HH:MM in 24-hour format).
-                        If a task mentions a relative time (like "in 2 hours" or like "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date and time is ${new Date().toISOString().split('T')[0]}, and the current time is ${new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: opts.input.timeZone })}.
-                        If a task does not specify a date, use the most recently mentioned date in the text. If no date is mentioned, use today's date (${new Date().toISOString().split('T')[0]}).
+                        If a task mentions a relative time (like "in 2 hours" or "in 8 minutes"), calculate the date and time accordingly using the current time as the reference point. Today's date is ${currentDateUTC.split('T')[0]}, and the current time is ${currentTimeUTC}.
+                        If a task does not specify a date, use the most recently mentioned date in the text. If no date is mentioned, use today's date (${currentDateUTC.split('T')[0]}).
                         If a task does not specify a reminder time, use the most recently mentioned reminder time in the text. If no reminder time is mentioned at all, set the reminders to 10 minutes before the task's start time.
                         Ensure the output is formatted as follows:\n\n[{ "task": "Task description", "date": "YYYY-MM-DD", "time": "HH:MM", "reminder": "HH:MM"}] and that there is no text inside the output.`
                     },
@@ -83,8 +85,8 @@ export const aiRouter = createTRPCRouter({
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    const startDateTimeISO = `${opt.date}T${opt.time}:00Z`;
-                    const reminderTimeISO = `${opt.date}T${opt.reminder}:00Z`;
+                    const startDateTimeISO = moment.utc(`${opt.date}T${opt.time}:00`).toISOString();
+                    const reminderTimeISO = moment.utc(`${opt.date}T${opt.reminder}:00`).toISOString();
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
@@ -142,8 +144,13 @@ export const aiRouter = createTRPCRouter({
 
         const mergeDateTime = (currentDateTime: string, newTime: string) => {
             const dateObj = new Date(currentDateTime);
-            const datePart = format(dateObj, 'yyyy-MM-dd');
-            return `${datePart} ${newTime}:00+00`;
+
+            const datePart = dateObj.getUTCFullYear() + '-' +
+                (dateObj.getUTCMonth() + 1).toString().padStart(2, '0') + '-' +
+                dateObj.getUTCDate().toString().padStart(2, '0');
+            const newDateTimeUTC = `${datePart}T${newTime}:00Z`; // 'Z' denotes UTC
+
+            return newDateTimeUTC;
         };
 
         const currentEventDetails = await db.selectFrom('event').selectAll().where('eventId', '=', opts.input.eventId).execute();

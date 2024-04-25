@@ -11,9 +11,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
-import { format } from "date-fns";
 import { motion } from 'framer-motion'
-import { convertLocalTimeToUTCSimple } from '@/lib/utils/date';
+import { convertLocalTimeToUTCSimple, formatReminderStart } from '@/lib/utils/date';
 import { useToast } from "@/components/ui/use-toast"
 import Loading from '@/app/components/loader/loading';
 import { useUser } from '@clerk/nextjs';
@@ -170,8 +169,8 @@ const Reminder = () => {
             </div>
             <div className='md:place-items-center md:w-2/4 h-full grid md:grid-cols-2 w-3/4 gap-8'>
                 {reminders && reminders.map((opts, index) => {
-                    const startDate = moment.utc(opts.start).format('YYYY-MM-DD HH:mm');
-                    const reminderDate = moment.utc(opts.reminder).format('YYYY-MM-DD HH:mm');
+                    const startDate = formatReminderStart(opts.start, Intl.DateTimeFormat().resolvedOptions().timeZone)
+                    const reminderDate = formatReminderStart(opts.reminder, Intl.DateTimeFormat().resolvedOptions().timeZone)
                     const id = opts.eventId
                     return (
                         <motion.div initial="initial"
