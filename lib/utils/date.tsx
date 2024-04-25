@@ -18,3 +18,22 @@ export function convertLocalTimeToUTCSimple(localTime: any) {
 export function formatReminderStart(reminderStart: any, timeZone: any) {
     return moment(reminderStart).tz(timeZone).format('YYYY-MM-DD HH:mm');
 }
+
+export function convertLocalTimeToUTC(date: any, time: any, timeZone: any) {
+    const localTime = moment.tz(`${date} ${time}`, "YYYY-MM-DD HH:mm", timeZone);
+    const utcTime = localTime.utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+    return utcTime;
+}
+
+// Function to decide whether to convert directly or use timezone
+export function determineCorrectUTC(date: any, time: any, timeZone: any) {
+    const currentDate = moment.utc().format('YYYY-MM-DD'); // Current UTC date
+    const inputDate = moment(date).format('YYYY-MM-DD'); // Input date standardized
+    if (currentDate === inputDate) {
+        // If the date of the task is today, convert directly to UTC
+        return moment.utc(`${date}T${time}:00`).toISOString();
+    } else {
+        // If the date is in the future, use the timezone conversion
+        return convertLocalTimeToUTC(date, time, timeZone);
+    }
+}

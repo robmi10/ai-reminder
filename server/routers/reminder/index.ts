@@ -2,9 +2,8 @@ import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
 import OpenAI from 'openai';
 import { db } from "@/utils/db/db";
-import { format } from "date-fns";
 import Replicate from 'replicate';
-import moment from "moment-timezone";
+import { determineCorrectUTC } from "@/lib/utils/date";
 
 const client = new OpenAI({
     apiKey: process.env.TOGETHER_API_KEY,
@@ -85,8 +84,8 @@ export const aiRouter = createTRPCRouter({
             try {
                 const usageDate = new Date();
                 await Promise.all(reminderList.map(async (opt: any) => {
-                    const startDateTimeISO = moment.utc(`${opt.date}T${opt.time}:00`).toISOString();
-                    const reminderTimeISO = moment.utc(`${opt.date}T${opt.reminder}:00`).toISOString();
+                    const startDateTimeISO = determineCorrectUTC(opt.date, opt.time, opts.input.timeZone)
+                    const reminderTimeISO = determineCorrectUTC(opt.date, opt.reminder, opts.input.timeZone)
                     const startDateTime = new Date(startDateTimeISO);
                     const reminderTime = new Date(reminderTimeISO);
 
